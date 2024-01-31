@@ -29,5 +29,7 @@ replay_pid*
 *.ipr
 *.iws
 
+# build
 target/
 build/
+.flattened-pom.xml
