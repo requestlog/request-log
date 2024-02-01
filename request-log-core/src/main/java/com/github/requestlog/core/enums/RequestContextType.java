@@ -7,5 +7,6 @@ package com.github.requestlog.core.enums;
 public enum RequestContextType {
 
     REST_TEMPLATE,
+    FEIGN,
 
 }

@@ -6,7 +6,6 @@ import com.github.requestlog.resttemplate.interceptor.RequestLogRestTemplateInte
 import com.github.requestlog.resttemplate.support.RestTemplateUtils;
 import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -18,16 +17,18 @@ import org.springframework.web.client.RestTemplate;
 import java.util.Map;
 
 
-@Configuration
+/**
+ * RequestLog configuration for {@link RestTemplate}
+ */
+@Configuration(proxyBeanMethods = false)
 @Import(RequestLogConfiguration.class)
-@AutoConfigureAfter({RequestLogConfiguration.class, com.github.requestlog.core.config.RequestLogConfiguration.HandlerConfiguration.class})
 public class RequestLogRestTemplateAutoConfiguration {
 
 
     /**
-     * Configuration class for creating {@link RequestLogRestTemplateInterceptor} bean.
+     * Configuration class for creating {@link RequestLogRestTemplateInterceptor}.
      */
-    @Configuration
+    @Configuration(proxyBeanMethods = false)
     @ConditionalOnMissingBean(RequestLogRestTemplateInterceptor.class)
     protected static class InterceptorConfiguration {
 
@@ -42,7 +43,7 @@ public class RequestLogRestTemplateAutoConfiguration {
      * Configuration class for registering the {@link RequestLogRestTemplateInterceptor}.
      * This configuration is activated when the property 'request-log.rest-template.enhance-all' is set to 'true' (or not set, considering the default match).
      */
-    @Configuration
+    @Configuration(proxyBeanMethods = false)
     @ConditionalOnBean({RestTemplate.class, RequestLogRestTemplateInterceptor.class})
     @ConditionalOnProperty(value = "request-log.rest-template.enhance-all", havingValue = "true", matchIfMissing = true)
     protected static class RegisterInterceptorConfiguration {

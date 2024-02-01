@@ -4,6 +4,7 @@ import com.github.requestlog.core.context.LogContext;
 import com.github.requestlog.core.context.request.OutboundRequestContext;
 import com.github.requestlog.core.enums.HttpMethod;
 import com.github.requestlog.core.enums.RequestContextType;
+import com.github.requestlog.resttemplate.support.RestTemplateUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
@@ -14,11 +15,10 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
-import com.github.requestlog.resttemplate.support.RestTemplateUtils;
 
 
 /**
- * Request context 4 {@link org.springframework.web.client.RestTemplate}
+ * Request context for {@link org.springframework.web.client.RestTemplate}
  */
 @Slf4j
 public class RestTemplateRequestContext extends OutboundRequestContext {

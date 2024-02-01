@@ -36,11 +36,10 @@ public final class LogContext {
     /**
      * Context Config
      */
-    // TODO: 2024/1/27 这个名字是否要更改一下
     @Getter
     public static class ContextConfig {
 
-        // TODO: 2024/1/31 some reserved fields like bizId、tenentId
+        // TODO: 2024/1/31 some reserved fields like bizId、tenantId
 
         /**
          * also generate retry job

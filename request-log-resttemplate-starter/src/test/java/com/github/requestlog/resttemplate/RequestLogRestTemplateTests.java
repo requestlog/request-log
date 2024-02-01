@@ -45,36 +45,36 @@ public class RequestLogRestTemplateTests {
     /**
      * Tests HTTP GET method.
      *
-     * @param path                the request path
-     * @param expectsException    indicates whether an exception is expected
-     * @param enableLogging       indicates whether request logging is enabled
-     * @param expectedLogIncrease expected increase in logging count
+     * @param path               the request path
+     * @param expectsException   indicates whether an exception is expected
+     * @param enableLogging      indicates whether request logging is enabled
+     * @param expectsLogIncrease indicates whether logging increase is expected
      */
     @DisplayName("Test http get")
     @ParameterizedTest
     @MethodSource("testGetArguments")
-    public void testGet(String path, boolean expectsException, boolean enableLogging, int expectedLogIncrease) {
+    public void testGet(String path, boolean expectsException, boolean enableLogging, int expectsLogIncrease) {
 
         // TODO: 2024/1/31 specify for current request Predicates.
 
         String url = String.format("http://localhost:%s%s", port, path);
 
-        int size = inMemoryRequestLogRepository.getRequestLogList().size();
+        int size = inMemoryRequestLogRepository.getRequestLogSize();
         try {
             Supplier<String> supplier = () -> restTemplate.getForObject(url, String.class);
 
             String responseBody = enableLogging ? LogContext.log().execute(supplier) : supplier.get();
             log.info("response: {}", responseBody);
-        } catch (Exception exception) {
+        } catch (Exception e) {
             if (!expectsException) {
-                throw exception;
+                throw e;
             }
-            log.warn("occurred error:", exception);
+            log.warn("occurred error:", e);
         }
 
-        assert inMemoryRequestLogRepository.getRequestLogList().size() - size == expectedLogIncrease;
+        assert inMemoryRequestLogRepository.getRequestLogSize() - size == expectsLogIncrease;
 
-        if (expectedLogIncrease > 0) {
+        if (expectsLogIncrease > 0) {
             log.info("last generated request-log: {}", inMemoryRequestLogRepository.getLastRequestLog());
         }
 
@@ -99,20 +99,20 @@ public class RequestLogRestTemplateTests {
     /**
      * Tests HTTP POST method.
      *
-     * @param path                the request path
-     * @param mediaType           request content-type
-     * @param expectsException    indicates whether an exception is expected
-     * @param enableLogging       indicates whether request logging is enabled
-     * @param expectedLogIncrease expected increase in logging count
+     * @param path               the request path
+     * @param mediaType          request content-type
+     * @param expectsException   indicates whether an exception is expected
+     * @param enableLogging      indicates whether request logging is enabled
+     * @param expectsLogIncrease indicates whether logging increase is expected
      */
     @DisplayName("Test http post")
     @ParameterizedTest
     @MethodSource("testPostArguments")
-    public void testPost(String path, MediaType mediaType, boolean expectsException, boolean enableLogging, int expectedLogIncrease) {
+    public void testPost(String path, MediaType mediaType, boolean expectsException, boolean enableLogging, int expectsLogIncrease) {
 
         String url = String.format("http://localhost:%s%s", port, path);
 
-        int size = inMemoryRequestLogRepository.getRequestLogList().size();
+        int size = inMemoryRequestLogRepository.getRequestLogSize();
         try {
 
             Supplier<ResponseEntity<String>> supplier = () -> {
@@ -124,16 +124,16 @@ public class RequestLogRestTemplateTests {
 
             ResponseEntity<String> responseEntity = enableLogging ? LogContext.log().execute(supplier) : supplier.get();
             log.info("response code: {}, body: {}", responseEntity.getStatusCodeValue(), responseEntity.getBody());
-        } catch (Exception exception) {
+        } catch (Exception e) {
             if (!expectsException) {
-                throw exception;
+                throw e;
             }
-            log.warn("occurred error:", exception);
+            log.warn("occurred error:", e);
         }
 
-        assert inMemoryRequestLogRepository.getRequestLogList().size() - size == expectedLogIncrease;
+        assert inMemoryRequestLogRepository.getRequestLogSize() - size == expectsLogIncrease;
 
-        if (expectedLogIncrease > 0) {
+        if (expectsLogIncrease > 0) {
             log.info("last generated request-log: {}", inMemoryRequestLogRepository.getLastRequestLog());
         }
 

@@ -41,6 +41,13 @@ public class InMemoryRequestLogRepository implements IRequestLogRepository {
     }
 
     /**
+     * Get request log generated size.
+     */
+    public int getRequestLogSize() {
+        return requestLogList.size();
+    }
+
+    /**
      * Get last generated {@link RequestLog}.
      */
     public RequestLog getLastRequestLog() {

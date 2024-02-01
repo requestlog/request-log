@@ -36,9 +36,9 @@ public class RequestLogRestTemplateInterceptor implements ClientHttpRequestInter
             ClientHttpResponse clientHttpResponse = RestTemplateUtils.convert2RepeatableBodyResponse(execution.execute(request, body));
             requestLogHandler.handle(new RestTemplateRequestContext(LogContext.CONTEXT_THREAD_LOCAL.get(), request, body, clientHttpResponse));
             return clientHttpResponse;
-        } catch (Exception exception) {
-            requestLogHandler.handle(new RestTemplateRequestContext(LogContext.CONTEXT_THREAD_LOCAL.get(), request, body, exception));
-            throw exception;
+        } catch (Exception e) {
+            requestLogHandler.handle(new RestTemplateRequestContext(LogContext.CONTEXT_THREAD_LOCAL.get(), request, body, e));
+            throw e;
         }
 
     }
