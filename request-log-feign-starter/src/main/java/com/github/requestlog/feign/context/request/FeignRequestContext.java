@@ -108,6 +108,9 @@ public class FeignRequestContext extends OutboundRequestContext {
         if (responseHeadersCache != null) {
             return responseHeadersCache;
         }
+        if (response == null) {
+            return null;
+        }
         return (responseHeadersCache = FeignUtils.convertHeaders(response.headers()));
     }
 

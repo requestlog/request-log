@@ -80,14 +80,14 @@ public class RestTemplateRequestContext extends OutboundRequestContext {
         return null;
     }
 
-    private String bodyCache;
+    private String requestBodyCache;
 
     @Override
     public String getRequestBody() {
-        if (bodyCache != null) {
-            return bodyCache;
+        if (requestBodyCache != null) {
+            return requestBodyCache;
         }
-        return (bodyCache = (body == null ? null : new String(body, StandardCharsets.UTF_8)));
+        return (requestBodyCache = (body == null ? null : new String(body, StandardCharsets.UTF_8)));
     }
 
     @Override

@@ -8,5 +8,6 @@ public enum RequestContextType {
 
     REST_TEMPLATE,
     FEIGN,
+    SERVLET,
 
 }

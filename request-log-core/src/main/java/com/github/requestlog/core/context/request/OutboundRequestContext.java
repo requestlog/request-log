@@ -2,18 +2,13 @@ package com.github.requestlog.core.context.request;
 
 
 import com.github.requestlog.core.context.LogContext;
-import com.github.requestlog.core.enums.HttpMethod;
 import com.github.requestlog.core.enums.RequestLogErrorType;
 import com.github.requestlog.core.model.HttpRequestContextModel;
-import com.github.requestlog.core.model.RequestLog;
-import com.github.requestlog.core.model.RequestRetryJob;
 import com.github.requestlog.core.support.CollectionUtils;
 import com.github.requestlog.core.support.Predicates;
 import com.github.requestlog.core.support.SupplierChain;
 import lombok.RequiredArgsConstructor;
 
-import java.util.List;
-import java.util.Map;
 import java.util.function.Predicate;
 
 
@@ -25,8 +20,6 @@ public abstract class OutboundRequestContext extends BaseRequestContext {
 
 
     protected final LogContext.ContextConfig contextConfig;
-    protected Exception exception;
-    protected RequestLogErrorType requestLogErrorType;
 
 
     @Override
@@ -69,80 +62,10 @@ public abstract class OutboundRequestContext extends BaseRequestContext {
 
     @Override
     public boolean retryRequest() {
-        return logRequest() && Boolean.TRUE.equals(contextConfig.getRetry());
-    }
-
-
-    @Override
-    public RequestLog buildRequestLog() {
-        if (super.requestLogCache != null) {
-            return super.requestLogCache;
+        if (retryRequestCache != null) {
+            return retryRequestCache;
         }
-        RequestLog requestLog = new RequestLog();
-        requestLog.setContextType(getRequestContextType());
-        requestLog.setLogErrorType(requestLogErrorType);
-
-        // exception
-        requestLog.setException(exception);
-
-        // request
-        requestLog.setHttpMethod(getRequestMethod());
-        requestLog.setRequestUrl(getRequestUrl());
-        requestLog.setRequestPath(getRequestPath());
-        requestLog.setRequestHeaders(getRequestHeaders());
-        requestLog.setRequestBody(getRequestBody());
-
-        // response
-        requestLog.setResponseCode(getResponseCode());
-        requestLog.setResponseHeaders(getResponseHeaders());
-        requestLog.setResponseBody(getResponseBody());
-
-        return (super.requestLogCache = requestLog);
+        return (retryRequestCache = (logRequest() && Boolean.TRUE.equals(contextConfig.getRetry())));
     }
-
-
-    @Override
-    public RequestRetryJob buildRequestRetryJob() {
-        if (super.requestRetryJobCache != null) {
-            return super.requestRetryJobCache;
-        }
-
-        RequestRetryJob requestRetryJob = new RequestRetryJob();
-        requestRetryJob.setRequestLog(buildRequestLog());
-
-        // TODO: 2024/1/31 retry job fields
-
-
-        return (super.requestRetryJobCache = requestRetryJob);
-    }
-
-
-    public abstract HttpMethod getRequestMethod();
-
-    public abstract String getRequestUrl();
-
-    public abstract String getRequestPath();
-
-    public abstract Map<String, List<String>> getRequestHeaders();
-
-    // TODO: 2024/1/31
-    public String getRequestContentType() {
-        return CollectionUtils.firstElement(getRequestHeaders().get("content-type"));
-    }
-
-    // TODO: 2024/1/31
-    public abstract String getRequestParams();
-
-    public abstract String getRequestBody();
-
-    public abstract Integer getResponseCode();
-
-    public abstract Map<String, List<String>> getResponseHeaders();
-
-    /**
-     * will query multiple times.
-     * you should cache your result
-     */
-    public abstract String getResponseBody();
 
 }

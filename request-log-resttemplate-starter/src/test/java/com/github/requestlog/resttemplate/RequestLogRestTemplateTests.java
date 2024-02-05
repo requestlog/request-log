@@ -78,7 +78,6 @@ public class RequestLogRestTemplateTests {
             log.info("last generated request-log: {}", inMemoryRequestLogRepository.getLastRequestLog());
         }
 
-
     }
 
 

@@ -1,14 +1,15 @@
 package com.github.requestlog.core.context.request;
 
 import com.github.requestlog.core.enums.RequestContextType;
-import com.github.requestlog.core.model.RequestRetryJob;
+import com.github.requestlog.core.enums.RequestLogErrorType;
 import com.github.requestlog.core.model.RequestLog;
+import com.github.requestlog.core.model.RequestRetryJob;
 
 
 /**
  * Base class for request contexts.
  */
-public abstract class BaseRequestContext {
+public abstract class BaseRequestContext implements HttpRequestContext {
 
     /**
      * Request client type.
@@ -29,15 +30,52 @@ public abstract class BaseRequestContext {
      */
     public abstract boolean retryRequest();
 
+
     /**
      * Build {@link RequestLog}
      */
-    public abstract RequestLog buildRequestLog();
+    public RequestLog buildRequestLog() {
+        if (requestLogCache != null) {
+            return requestLogCache;
+        }
+        RequestLog requestLog = new RequestLog();
+        requestLog.setContextType(getRequestContextType());
+        requestLog.setLogErrorType(requestLogErrorType);
+
+        // exception
+        requestLog.setException(exception);
+
+        // request
+        requestLog.setHttpMethod(getRequestMethod());
+        requestLog.setRequestUrl(getRequestUrl());
+        requestLog.setRequestPath(getRequestPath());
+        requestLog.setRequestHeaders(getRequestHeaders());
+        requestLog.setRequestBody(getRequestBody());
+
+        // response
+        requestLog.setResponseCode(getResponseCode());
+        requestLog.setResponseHeaders(getResponseHeaders());
+        requestLog.setResponseBody(getResponseBody());
+
+        return (requestLogCache = requestLog);
+    }
 
     /**
      * Build {@link RequestRetryJob}
      */
-    public abstract RequestRetryJob buildRequestRetryJob();
+    public RequestRetryJob buildRequestRetryJob() {
+        if (requestRetryJobCache != null) {
+            return requestRetryJobCache;
+        }
+
+        RequestRetryJob requestRetryJob = new RequestRetryJob();
+        requestRetryJob.setRequestLog(buildRequestLog());
+
+        // TODO: 2024/1/31 retry job fields
+
+
+        return (requestRetryJobCache = requestRetryJob);
+    }
 
 
     /**
@@ -59,5 +97,18 @@ public abstract class BaseRequestContext {
      * Cache for {@link #buildRequestRetryJob()}
      */
     protected RequestRetryJob requestRetryJobCache;
+
+
+    /**
+     * Exception for the current request context.
+     */
+    protected Exception exception;
+
+    /**
+     * Error type for the current request context.
+     *
+     * This value will be evaluated and assigned in the first invocation of the {@link #logRequest} method.
+     */
+    protected RequestLogErrorType requestLogErrorType;
 
 }

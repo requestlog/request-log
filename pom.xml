@@ -33,6 +33,7 @@
         <module>request-log-resttemplate-starter</module>
         <module>request-log-test</module>
         <module>request-log-feign-starter</module>
+        <module>request-log-servlet-starter</module>
     </modules>
 
     <dependencies>

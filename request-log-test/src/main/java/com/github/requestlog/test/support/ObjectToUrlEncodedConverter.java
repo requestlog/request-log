@@ -1,4 +1,4 @@
-package com.github.requestlog.resttemplate.support;
+package com.github.requestlog.test.support;
 
 
 import com.fasterxml.jackson.annotation.JsonAnySetter;
