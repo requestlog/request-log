@@ -1,5 +1,7 @@
 package com.github.requestlog.test.model;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.requestlog.test.util.RandomUtil;
 import lombok.Data;
 
@@ -29,6 +31,18 @@ public class RequestParamModel {
         model.setBooleanValue(RandomUtil.randomBoolean());
         // TODO: 2024/1/30  string list int list
         return model;
+    }
+
+    /**
+     * Generate a random json string for {@link RequestParamModel}.
+     */
+    public static String randomJson() {
+        try {
+            return new ObjectMapper().writeValueAsString(randomObj());
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
 }

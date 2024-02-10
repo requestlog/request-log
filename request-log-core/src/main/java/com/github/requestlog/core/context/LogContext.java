@@ -2,9 +2,12 @@ package com.github.requestlog.core.context;
 
 
 import com.github.requestlog.core.model.HttpRequestContextModel;
+import com.github.requestlog.core.support.function.RunnableExp;
+import com.github.requestlog.core.support.function.SupplierExp;
 import lombok.Getter;
 
 import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
@@ -114,6 +117,43 @@ public final class LogContext {
                     CONTEXT_THREAD_LOCAL.set(carry);
                 }
             }
+        }
+
+
+        /**
+         * execute
+         */
+        public <E extends Exception> void executeWithExp(RunnableExp<E> runnable) throws E {
+            executeWithExp(() -> {
+                runnable.run();
+                return null;
+            });
+        }
+
+
+        /**
+         * execute and return
+         */
+        public <T, E extends Exception> T executeWithExp(SupplierExp<T, E> supplier) throws E {
+            final AtomicReference<Exception> exceptionCarry = new AtomicReference<>();
+            final T returnObj = execute((Supplier<T>) () -> {
+                try {
+                    return supplier.get();
+                } catch (Exception e) {
+                    exceptionCarry.set(e);
+                    return null;
+                }
+            });
+            if (exceptionCarry.get() != null) {
+                try {
+                    @SuppressWarnings("unchecked")
+                    E e = (E) exceptionCarry.get();
+                    throw e;
+                } catch (ClassCastException e) {
+                    throw new RuntimeException(exceptionCarry.get());
+                }
+            }
+            return returnObj;
         }
 
     }

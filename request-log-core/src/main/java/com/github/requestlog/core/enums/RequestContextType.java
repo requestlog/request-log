@@ -9,5 +9,6 @@ public enum RequestContextType {
     REST_TEMPLATE,
     FEIGN,
     SERVLET,
+    APACHE_HTTP_CLIENT,
 
 }
