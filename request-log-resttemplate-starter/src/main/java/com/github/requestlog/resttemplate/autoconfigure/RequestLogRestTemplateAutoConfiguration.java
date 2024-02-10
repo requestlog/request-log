@@ -3,7 +3,7 @@ package com.github.requestlog.resttemplate.autoconfigure;
 import com.github.requestlog.core.config.RequestLogConfiguration;
 import com.github.requestlog.core.handler.AbstractRequestLogHandler;
 import com.github.requestlog.resttemplate.interceptor.RequestLogRestTemplateInterceptor;
-import com.github.requestlog.resttemplate.support.RestTemplateUtils;
+import com.github.requestlog.resttemplate.support.RestTemplateRequestLogEnhancer;
 import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -39,12 +39,29 @@ public class RequestLogRestTemplateAutoConfiguration {
 
     }
 
+
+    /**
+     * Configuration class for creating {@link RestTemplateRequestLogEnhancer}.
+     */
+    @Configuration(proxyBeanMethods = false)
+    @ConditionalOnMissingBean(RestTemplateRequestLogEnhancer.class)
+    protected static class RestTemplateRequestLogEnhancerConfiguration {
+
+        @Bean
+        public RestTemplateRequestLogEnhancer requestLogEnhancer(@Autowired RequestLogRestTemplateInterceptor interceptor) {
+            return new RestTemplateRequestLogEnhancer(interceptor);
+        }
+
+    }
+
+
     /**
      * Configuration class for registering the {@link RequestLogRestTemplateInterceptor}.
      * This configuration is activated when the property 'request-log.rest-template.enhance-all' is set to 'true' (or not set, considering the default match).
      */
+    // TODO: 2024/2/11 maybe not enhance all by default?
     @Configuration(proxyBeanMethods = false)
-    @ConditionalOnBean({RestTemplate.class, RequestLogRestTemplateInterceptor.class})
+    @ConditionalOnBean(RestTemplate.class)
     @ConditionalOnProperty(value = "request-log.rest-template.enhance-all", havingValue = "true", matchIfMissing = true)
     protected static class RegisterInterceptorConfiguration {
 
@@ -53,13 +70,11 @@ public class RequestLogRestTemplateAutoConfiguration {
          * for all {@link RestTemplate} instances available in the application context.
          */
         @Bean
-        public SmartInitializingSingleton registerRequestLogRestTemplateInterceptorInitializer(@Autowired RequestLogRestTemplateInterceptor interceptor,
+        public SmartInitializingSingleton registerRequestLogRestTemplateInterceptorInitializer(@Autowired RestTemplateRequestLogEnhancer enhancer,
                                                                                                @Autowired Map<String, RestTemplate> restTemplateMap) {
-            return () -> restTemplateMap.values().forEach(restTemplate -> RestTemplateUtils.addInterceptor(restTemplate, interceptor));
+            return () -> restTemplateMap.values().forEach(enhancer::enhance);
         }
 
     }
-
-    // TODO: 2024/1/28 manually register
 
 }

@@ -7,7 +7,7 @@ import org.apache.http.client.HttpClient;
 
 
 /**
- * Enhances an Apache HttpClient with RequestLog capabilities.
+ * Enhances an {@link HttpClient} with RequestLog capabilities.
  */
 @Slf4j
 @RequiredArgsConstructor
