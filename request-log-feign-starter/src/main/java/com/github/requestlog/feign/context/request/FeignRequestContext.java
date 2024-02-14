@@ -34,15 +34,15 @@ public class FeignRequestContext extends OutboundRequestContext {
     private final Response response;
 
 
-    public FeignRequestContext(LogContext.ContextConfig contextConfig, Request request, Exception exception) {
-        super(contextConfig);
+    public FeignRequestContext(LogContext logContext, Request request, Exception exception) {
+        super(logContext);
         super.exception = exception;
         this.request = request;
         this.response = null;
     }
 
-    public FeignRequestContext(LogContext.ContextConfig contextConfig, Request request, Response response) {
-        super(contextConfig);
+    public FeignRequestContext(LogContext logContext, Request request, Response response) {
+        super(logContext);
         this.request = request;
         this.response = response;
     }
@@ -76,11 +76,6 @@ public class FeignRequestContext extends OutboundRequestContext {
             return requestHeadersCache;
         }
         return (requestHeadersCache = FeignUtils.convertHeaders(request.headers()));
-    }
-
-    @Override
-    public String getRequestParams() {
-        return null;
     }
 
     private String requestBodyCache;

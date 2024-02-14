@@ -14,9 +14,9 @@ public class HttpRequestContextModel {
     private HttpMethod httpMethod;
     private RequestContextType requestContextType;
 
+    private String requestUrl;
     private String requestPath;
     private Map<String, List<String>> requestHeaders;
-    // TODO: 2024/1/31 requestParams?
     private String requestBody;
 
     private Integer responseCode;

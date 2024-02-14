@@ -76,8 +76,8 @@ public class HttpClientUtils {
                     .setScheme(httpHost.getSchemeName())
                     .setHost(httpHost.getHostName())
                     .setPort(httpHost.getPort())
-                    .setPath(new URI(httpRequest.getRequestLine().getUri()).getPath())
-                    .build();
+                    .build()
+                    .resolve(new URI(httpRequest.getRequestLine().getUri()));
         } catch (URISyntaxException e) {
             throw new IllegalArgumentException(e);
         }

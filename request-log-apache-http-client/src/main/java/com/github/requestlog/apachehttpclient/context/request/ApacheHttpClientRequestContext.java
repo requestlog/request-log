@@ -39,20 +39,20 @@ public class ApacheHttpClientRequestContext extends OutboundRequestContext {
     private HttpResponse response;
 
 
-    private ApacheHttpClientRequestContext(LogContext.ContextConfig contextConfig, HttpHost host, HttpRequest request) {
-        super(contextConfig);
+    private ApacheHttpClientRequestContext(LogContext logContext, HttpHost host, HttpRequest request) {
+        super(logContext);
         this.host = host;
         this.request = request;
         this.uri = HttpClientUtils.buildURI(host, request);
     }
 
-    public ApacheHttpClientRequestContext(LogContext.ContextConfig contextConfig, HttpHost host, HttpRequest request, Exception exception) {
-        this(contextConfig, host, request);
+    public ApacheHttpClientRequestContext(LogContext logContext, HttpHost host, HttpRequest request, Exception exception) {
+        this(logContext, host, request);
         super.exception = exception;
     }
 
-    public ApacheHttpClientRequestContext(LogContext.ContextConfig contextConfig, HttpHost host, HttpRequest request, HttpResponse response) {
-        this(contextConfig, host, request);
+    public ApacheHttpClientRequestContext(LogContext logContext, HttpHost host, HttpRequest request, HttpResponse response) {
+        this(logContext, host, request);
         this.response = response;
     }
 
@@ -81,12 +81,6 @@ public class ApacheHttpClientRequestContext extends OutboundRequestContext {
             return requestHeadersCache;
         }
         return (requestHeadersCache = HttpClientUtils.convertHeaders(request.getAllHeaders()));
-    }
-
-    @Override
-    public String getRequestParams() {
-        // TODO: 2024/2/7
-        return null;
     }
 
 

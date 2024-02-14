@@ -37,16 +37,16 @@ public class RestTemplateRequestContext extends OutboundRequestContext {
     private final ClientHttpResponse response;
 
 
-    public RestTemplateRequestContext(LogContext.ContextConfig contextConfig, HttpRequest request, byte[] body, Exception exception) {
-        super(contextConfig);
+    public RestTemplateRequestContext(LogContext logContext, HttpRequest request, byte[] body, Exception exception) {
+        super(logContext);
         super.exception = exception;
         this.request = request;
         this.body = body;
         this.response = null;
     }
 
-    public RestTemplateRequestContext(LogContext.ContextConfig contextConfig, HttpRequest request, byte[] body, @Nullable ClientHttpResponse response) {
-        super(contextConfig);
+    public RestTemplateRequestContext(LogContext logContext, HttpRequest request, byte[] body, @Nullable ClientHttpResponse response) {
+        super(logContext);
         this.request = request;
         this.body = body;
         this.response = response;
@@ -66,7 +66,6 @@ public class RestTemplateRequestContext extends OutboundRequestContext {
 
     @Override
     public String getRequestPath() {
-        // TODO: 2024/1/27 get raw path
         return request.getURI().getPath();
     }
 
@@ -75,10 +74,6 @@ public class RestTemplateRequestContext extends OutboundRequestContext {
         return request.getHeaders();
     }
 
-    @Override
-    public String getRequestParams() {
-        return null;
-    }
 
     private String requestBodyCache;
 

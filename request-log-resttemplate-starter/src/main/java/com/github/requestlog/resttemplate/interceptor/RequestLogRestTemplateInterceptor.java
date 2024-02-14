@@ -27,17 +27,17 @@ public class RequestLogRestTemplateInterceptor implements ClientHttpRequestInter
     public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution) throws IOException {
 
         // Skipped, no logging is specified.
-        if (LogContext.CONTEXT_THREAD_LOCAL.get() == null) {
+        if (LogContext.THREAD_LOCAL.get() == null) {
             return execution.execute(request, body);
         }
 
         try {
             // Perform request and convert response as body repeatable read response.
             ClientHttpResponse clientHttpResponse = RestTemplateUtils.convert2RepeatableBodyResponse(execution.execute(request, body));
-            requestLogHandler.handle(new RestTemplateRequestContext(LogContext.CONTEXT_THREAD_LOCAL.get(), request, body, clientHttpResponse));
+            requestLogHandler.handle(new RestTemplateRequestContext(LogContext.THREAD_LOCAL.get(), request, body, clientHttpResponse));
             return clientHttpResponse;
         } catch (Exception e) {
-            requestLogHandler.handle(new RestTemplateRequestContext(LogContext.CONTEXT_THREAD_LOCAL.get(), request, body, e));
+            requestLogHandler.handle(new RestTemplateRequestContext(LogContext.THREAD_LOCAL.get(), request, body, e));
             throw e;
         }
 

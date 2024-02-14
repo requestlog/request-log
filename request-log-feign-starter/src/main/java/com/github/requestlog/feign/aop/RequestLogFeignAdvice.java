@@ -28,7 +28,7 @@ public class RequestLogFeignAdvice {
     @Around("execution(* feign.Client.execute(..))")
     public Object around(ProceedingJoinPoint joinPoint) throws Throwable {
 
-        if (LogContext.CONTEXT_THREAD_LOCAL.get() == null) {
+        if (LogContext.THREAD_LOCAL.get() == null) {
             return joinPoint.proceed();
         }
 
@@ -41,10 +41,10 @@ public class RequestLogFeignAdvice {
         try {
             Response responseObj = (Response) joinPoint.proceed();
             responseObj = FeignUtils.convertAsRepeatableRead(responseObj); // TODO: 2024/2/1 need switch 2 turn it off?
-            requestLogHandler.handle(new FeignRequestContext(LogContext.CONTEXT_THREAD_LOCAL.get(), request, responseObj));
+            requestLogHandler.handle(new FeignRequestContext(LogContext.THREAD_LOCAL.get(), request, responseObj));
             return responseObj;
         } catch (Exception e) {
-            requestLogHandler.handle(new FeignRequestContext(LogContext.CONTEXT_THREAD_LOCAL.get(), request, e));
+            requestLogHandler.handle(new FeignRequestContext(LogContext.THREAD_LOCAL.get(), request, e));
             throw e;
         }
 

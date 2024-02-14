@@ -98,14 +98,15 @@ public class ServletRequestContext extends InboundRequestContext {
         return request.getServletPath();
     }
 
-    @Override
-    public Map<String, List<String>> getRequestHeaders() {
-        return ServletUtils.getRequestHeaders(request);
-    }
+
+    private Map<String, List<String>> requestHeadersCache;
 
     @Override
-    public String getRequestParams() {
-        return null;
+    public Map<String, List<String>> getRequestHeaders() {
+        if (requestHeadersCache != null) {
+            return requestHeadersCache;
+        }
+        return (requestHeadersCache = ServletUtils.getRequestHeaders(request));
     }
 
     private String requestBodyCache;

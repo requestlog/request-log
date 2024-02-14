@@ -1,9 +1,14 @@
 package com.github.requestlog.resttemplate.support;
 
 import com.github.requestlog.resttemplate.support.spring.BodyCacheClientHttpResponseWrapper;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -53,5 +58,16 @@ public class RestTemplateUtils {
         restTemplate.getInterceptors().add(clientHttpRequestInterceptor);
     }
 
+
+    /**
+     * Converts a Map of headers to HttpHeaders.
+     */
+    public static HttpHeaders convert2HttpHeaders(Map<String, List<String>> headersMap) {
+        HttpHeaders headers = new HttpHeaders();
+        if (!CollectionUtils.isEmpty(headersMap)) {
+            headersMap.forEach(headers::addAll);
+        }
+        return headers;
+    }
 
 }

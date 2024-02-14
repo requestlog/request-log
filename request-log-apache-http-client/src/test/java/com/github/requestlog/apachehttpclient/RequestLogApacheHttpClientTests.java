@@ -98,10 +98,10 @@ public class RequestLogApacheHttpClientTests {
      */
     static Stream<Arguments> testGetArguments() {
         return Stream.of(
-                Arguments.of(GET_PATH, false, false, 0),
+                Arguments.of(GET_PATH + "?a=1&b=2", false, false, 0),
                 Arguments.of(GET_PATH, false, true, 0),
                 Arguments.of(GET_ERROR_PATH, false, false, 0),
-                Arguments.of(GET_ERROR_PATH, false, true, 1)
+                Arguments.of(GET_ERROR_PATH + "?a=1&b=2", false, true, 1)
         );
     }
 

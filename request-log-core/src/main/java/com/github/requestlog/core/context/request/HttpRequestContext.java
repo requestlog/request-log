@@ -18,13 +18,18 @@ public interface HttpRequestContext {
 
     Map<String, List<String>> getRequestHeaders();
 
-    // TODO: 2024/1/31
     default String getRequestContentType() {
-        return CollectionUtils.firstElement(getRequestHeaders().get("content-type"));
+        Map<String, List<String>> headers = getRequestHeaders();
+        if (CollectionUtils.isEmpty(headers)) {
+            return null;
+        }
+        for (String key : headers.keySet()) {
+            if ("content-type".equalsIgnoreCase(key)) {
+                return CollectionUtils.firstElement(getRequestHeaders().get(key));
+            }
+        }
+        return null;
     }
-
-    // TODO: 2024/1/31
-    String getRequestParams();
 
     String getRequestBody();
 

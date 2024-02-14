@@ -1,8 +1,8 @@
 package com.github.requestlog.core.model;
 
 
-import com.github.requestlog.core.enums.RequestContextType;
 import com.github.requestlog.core.enums.HttpMethod;
+import com.github.requestlog.core.enums.RequestContextType;
 import com.github.requestlog.core.enums.RequestLogErrorType;
 import lombok.Data;
 import lombok.ToString;
@@ -26,8 +26,7 @@ public class RequestLog {
     private HttpMethod httpMethod;
     private String requestUrl;
     private String requestPath;
-    private Map<String, List<String>> requestHeaders;
-    // TODO: 2024/1/31 requestParams?
+    private Map<String, List<String>> requestHeaders; // TODO: 2024/2/14 sensitive headers? let users process in repository?
     private String requestBody;
 
     // http response context

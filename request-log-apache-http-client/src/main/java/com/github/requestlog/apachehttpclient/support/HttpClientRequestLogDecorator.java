@@ -61,7 +61,7 @@ public class HttpClientRequestLogDecorator implements HttpClient {
     @Override
     public HttpResponse execute(HttpHost target, HttpRequest request, HttpContext context) throws IOException, ClientProtocolException {
 
-        if (LogContext.CONTEXT_THREAD_LOCAL.get() == null) {
+        if (LogContext.THREAD_LOCAL.get() == null) {
             return httpClientTarget.execute(target, request, context);
         }
 
@@ -69,10 +69,10 @@ public class HttpClientRequestLogDecorator implements HttpClient {
             HttpClientUtils.convertEntityRepeatable(request); // try to make request entity repeatable
             HttpResponse response = httpClientTarget.execute(target, request, context);
             HttpClientUtils.convertEntityRepeatable(response); // try to make response entity repeatable
-            requestLogHandler.handle(new ApacheHttpClientRequestContext(LogContext.CONTEXT_THREAD_LOCAL.get(), target, request, response));
+            requestLogHandler.handle(new ApacheHttpClientRequestContext(LogContext.THREAD_LOCAL.get(), target, request, response));
             return response;
         } catch (Exception e) {
-            requestLogHandler.handle(new ApacheHttpClientRequestContext(LogContext.CONTEXT_THREAD_LOCAL.get(), target, request, e));
+            requestLogHandler.handle(new ApacheHttpClientRequestContext(LogContext.THREAD_LOCAL.get(), target, request, e));
             throw e;
         }
     }
