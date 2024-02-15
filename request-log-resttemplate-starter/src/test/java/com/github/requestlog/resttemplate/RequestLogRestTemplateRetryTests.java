@@ -34,7 +34,10 @@ import static com.github.requestlog.test.controller.TestRestController.*;
 @SpringBootTest(
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
         classes = TestApplication.class,
-        properties = "debug=true"
+        properties = {
+                "debug=true",
+                "request-log.rest-template.enhance-all=true"
+        }
 )
 @Slf4j
 public class RequestLogRestTemplateRetryTests {

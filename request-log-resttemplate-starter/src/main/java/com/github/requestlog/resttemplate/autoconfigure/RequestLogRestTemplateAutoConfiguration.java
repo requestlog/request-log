@@ -59,10 +59,9 @@ public class RequestLogRestTemplateAutoConfiguration {
      * Configuration class for registering the {@link RequestLogRestTemplateInterceptor}.
      * This configuration is activated when the property 'request-log.rest-template.enhance-all' is set to 'true' (or not set, considering the default match).
      */
-    // TODO: 2024/2/11 maybe not enhance all by default?
     @Configuration(proxyBeanMethods = false)
     @ConditionalOnBean(RestTemplate.class)
-    @ConditionalOnProperty(value = "request-log.rest-template.enhance-all", havingValue = "true", matchIfMissing = true)
+    @ConditionalOnProperty(value = "request-log.rest-template.enhance-all", havingValue = "true")
     protected static class RegisterInterceptorConfiguration {
 
         /**
