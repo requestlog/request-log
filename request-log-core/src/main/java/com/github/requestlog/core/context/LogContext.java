@@ -114,8 +114,9 @@ public final class LogContext {
     }
 
     /**
-     * Match by given {@link Predicate< HttpRequestContextModel >}
+     * Match by given {@link Predicate<HttpRequestContextModel>}
      */
+    // TODO: 2024/2/15 change 2 successWhenResponse?
     public LogContext whenResponse(Predicate<HttpRequestContextModel> httpResponsePredicate) {
         this.httpResponsePredicate = httpResponsePredicate;
         return this;

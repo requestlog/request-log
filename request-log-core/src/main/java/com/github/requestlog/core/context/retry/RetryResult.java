@@ -104,10 +104,16 @@ public class RetryResult {
     }
 
 
+    private RequestRryLog requestRryLogCache = null;
+
     /**
      * Generates a log for the current retry.
      */
     public RequestRryLog generateRetryLog() {
+
+        if (requestRryLogCache != null) {
+            return requestRryLogCache;
+        }
 
         RequestRryLog retryLog = new RequestRryLog();
 
@@ -127,7 +133,7 @@ public class RetryResult {
         retryLog.setResponseHeaders(httpRequestContextModel.getResponseHeaders());
         retryLog.setResponseBody(httpRequestContextModel.getResponseBody());
 
-        return retryLog;
+        return (requestRryLogCache = retryLog);
     }
 
 }

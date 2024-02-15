@@ -2,6 +2,7 @@ package com.github.requestlog.core.repository.impl;
 
 import com.github.requestlog.core.model.RequestLog;
 import com.github.requestlog.core.model.RequestRetryJob;
+import com.github.requestlog.core.model.RequestRryLog;
 import com.github.requestlog.core.repository.IRequestLogRepository;
 import lombok.Getter;
 import org.springframework.util.CollectionUtils;
@@ -25,6 +26,8 @@ public class InMemoryRequestLogRepository implements IRequestLogRepository {
     @Getter
     private final List<RequestRetryJob> requestRetryJobList = new ArrayList<>();
 
+    @Getter
+    private final List<RequestRryLog> requestRryLogList = new ArrayList<>();
 
     @Override
     public void saveRequestLog(RequestLog requestLog) {
@@ -37,12 +40,15 @@ public class InMemoryRequestLogRepository implements IRequestLogRepository {
         requestRetryJobList.add(requestRetryJob);
     }
 
-
     @Override
     public void saveRequestRetryJob(RequestRetryJob requestRetryJob) {
         requestRetryJobList.add(requestRetryJob);
     }
 
+    @Override
+    public void saveRequestRetryLog(RequestRryLog requestRryLog) {
+        requestRryLogList.add(requestRryLog);
+    }
 
     /**
      * Get request log generated size.
@@ -59,17 +65,24 @@ public class InMemoryRequestLogRepository implements IRequestLogRepository {
     }
 
     /**
-     * Get last generated {@link RequestLog}.
+     * Get last saved {@link RequestLog}.
      */
     public RequestLog getLastRequestLog() {
         return CollectionUtils.lastElement(requestLogList);
     }
 
     /**
-     * Get last generated {@link RequestRetryJob}
+     * Get last saved {@link RequestRetryJob}
      */
     public RequestRetryJob getLastRetryJob() {
         return CollectionUtils.lastElement(requestRetryJobList);
+    }
+
+    /**
+     * Get last saved {@link RequestRryLog}
+     */
+    public RequestRryLog getLastRetryLog() {
+        return CollectionUtils.lastElement(requestRryLogList);
     }
 
 }
