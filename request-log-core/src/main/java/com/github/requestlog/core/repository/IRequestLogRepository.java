@@ -10,7 +10,10 @@ public interface IRequestLogRepository {
 
     void saveRequestLog(RequestLog requestLog);
 
-    void saveRequestLogAndRetryJob(RequestLog requestLog, RequestRetryJob requestLogRetryJob);
+    void saveRequestLogAndRetryJob(RequestLog requestLog, RequestRetryJob requestRetryJob);
+
+    default void saveRequestRetryJob(RequestRetryJob requestRetryJob) {
+    }
 
 
     default void saveRequestRetryLog(RequestRryLog requestRryLog) {

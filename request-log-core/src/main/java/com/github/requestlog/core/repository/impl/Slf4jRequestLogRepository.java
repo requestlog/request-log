@@ -19,13 +19,18 @@ public class Slf4jRequestLogRepository implements IRequestLogRepository {
     }
 
     @Override
-    public void saveRequestLogAndRetryJob(RequestLog requestLog, RequestRetryJob requestLogRetryJob) {
-        log.debug("save requestLog: {}, requestLogRetryJob: {}", requestLog, requestLogRetryJob);
+    public void saveRequestLogAndRetryJob(RequestLog requestLog, RequestRetryJob requestRetryJob) {
+        log.debug("save requestLog: {}, requestRetryJob: {}", requestLog, requestRetryJob);
     }
 
     @Override
-    public void saveRequestRetryLog(RequestRryLog requestRryLog) {
-        log.debug("save requestRetryLog: {}", requestRryLog);
+    public void saveRequestRetryJob(RequestRetryJob requestRetryJob) {
+        log.debug("save requestRetryJob: {}", requestRetryJob);
+    }
+
+    @Override
+    public void saveRequestRetryLog(RequestRryLog requestRetryLog) {
+        log.debug("save requestRetryLog: {}", requestRetryLog);
     }
 
 }
