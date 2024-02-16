@@ -21,6 +21,9 @@ public class ApacheHttpClientRequestLogEnhancer {
      * Enhances the provided {@link HttpClient} with RequestLog capabilities.
      */
     public HttpClient enhance(HttpClient httpClient) {
+        if (httpClient instanceof HttpClientRequestLogDecorator) {
+            return httpClient;
+        }
         return new HttpClientRequestLogDecorator(requestLogHandler, httpClient);
     }
 

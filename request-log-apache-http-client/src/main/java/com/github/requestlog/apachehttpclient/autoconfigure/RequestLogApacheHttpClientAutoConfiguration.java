@@ -35,4 +35,21 @@ public class RequestLogApacheHttpClientAutoConfiguration {
     }
 
 
+    /**
+     * Configuration class for creating {@link RequestLogApacheHttpClientBeanPostProcessor}.
+     */
+    @Configuration
+    @ConditionalOnMissingBean(RequestLogApacheHttpClientBeanPostProcessor.class)
+    protected static class RequestLogApacheHttpClientBeanPostProcessorConfiguration {
+
+        @Bean
+        public RequestLogApacheHttpClientBeanPostProcessor requestLogApacheHttpClientBeanProcessor(@Autowired ApacheHttpClientRequestLogEnhancer enhancer) {
+            return new RequestLogApacheHttpClientBeanPostProcessor(enhancer);
+        }
+
+    }
+
+    // TODO: 2024/2/16 scan all bean and enhance
+
+
 }
