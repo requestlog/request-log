@@ -1,6 +1,7 @@
 package com.github.requestlog.resttemplate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.requestlog.core.annotation.RequestLogEnhanced;
 import com.github.requestlog.core.repository.IRequestLogRepository;
 import com.github.requestlog.core.repository.impl.InMemoryRequestLogRepository;
 import com.github.requestlog.test.support.ObjectToUrlEncodedConverter;
@@ -18,6 +19,7 @@ public class RestTemplateTestConfiguration {
         return new InMemoryRequestLogRepository();
     }
 
+    @RequestLogEnhanced
     @Bean
     @ConditionalOnMissingBean(RestTemplate.class)
     public RestTemplate restTemplate() {

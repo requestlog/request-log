@@ -30,11 +30,11 @@
 
     <modules>
         <module>request-log-core</module>
-        <module>request-log-resttemplate-starter</module>
         <module>request-log-test</module>
+        <module>request-log-resttemplate-starter</module>
         <module>request-log-feign-starter</module>
         <module>request-log-servlet-starter</module>
-        <module>request-log-apache-http-client</module>
+        <module>request-log-apache-http-client-starter</module>
     </modules>
 
     <dependencies>

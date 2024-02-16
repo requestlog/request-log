@@ -26,7 +26,6 @@ import java.util.stream.Stream;
         classes = TestApplication.class,
         properties = {
                 "debug=true",
-                "request-log.rest-template.enhance-all=true"
         }
 )
 @Slf4j

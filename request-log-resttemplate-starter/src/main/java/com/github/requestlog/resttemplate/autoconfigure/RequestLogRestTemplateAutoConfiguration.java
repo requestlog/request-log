@@ -56,6 +56,21 @@ public class RequestLogRestTemplateAutoConfiguration {
 
 
     /**
+     * Configuration class for creating {@link RequestLogRestTemplateBeanPostProcessor}
+     */
+    @Configuration(proxyBeanMethods = false)
+    @ConditionalOnMissingBean(RequestLogRestTemplateBeanPostProcessor.class)
+    protected static class RequestLogRestTemplateBeanPostProcessorConfiguration {
+
+        @Bean
+        public RequestLogRestTemplateBeanPostProcessor requestLogRestTemplateBeanPostProcessor(@Autowired RestTemplateRequestLogEnhancer enhancer) {
+            return new RequestLogRestTemplateBeanPostProcessor(enhancer);
+        }
+
+    }
+
+
+    /**
      * Configuration class for registering the {@link RequestLogRestTemplateInterceptor}.
      * This configuration is activated when the property 'request-log.rest-template.enhance-all' is set to 'true' (or not set, considering the default match).
      */

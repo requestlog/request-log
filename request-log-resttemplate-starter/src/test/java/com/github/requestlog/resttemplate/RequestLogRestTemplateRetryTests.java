@@ -36,7 +36,6 @@ import static com.github.requestlog.test.controller.TestRestController.*;
         classes = TestApplication.class,
         properties = {
                 "debug=true",
-                "request-log.rest-template.enhance-all=true"
         }
 )
 @Slf4j
