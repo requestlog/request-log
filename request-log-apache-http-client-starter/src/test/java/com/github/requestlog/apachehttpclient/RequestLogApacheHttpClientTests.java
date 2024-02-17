@@ -33,6 +33,7 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 import static com.github.requestlog.test.controller.TestRestController.*;
+import static com.github.requestlog.test.util.ObjectUtil.asStringPretty;
 import static org.apache.http.entity.ContentType.APPLICATION_FORM_URLENCODED;
 import static org.apache.http.entity.ContentType.APPLICATION_JSON;
 
@@ -87,7 +88,7 @@ public class RequestLogApacheHttpClientTests {
         assert inMemoryRequestLogRepository.getRequestLogSize() - size == expectsLogIncrease;
 
         if (expectsLogIncrease > 0) {
-            log.info("last generated request-log: {}", inMemoryRequestLogRepository.getLastRequestLog());
+            log.info("last generated request-log: \n{}", asStringPretty(inMemoryRequestLogRepository.getLastRequestLog()));
         }
 
     }
@@ -136,7 +137,7 @@ public class RequestLogApacheHttpClientTests {
         assert inMemoryRequestLogRepository.getRequestLogSize() - size == expectsLogIncrease;
 
         if (expectsLogIncrease > 0) {
-            log.info("last generated request-log: {}", inMemoryRequestLogRepository.getLastRequestLog());
+            log.info("last generated request-log: \n{}", asStringPretty(inMemoryRequestLogRepository.getLastRequestLog()));
         }
 
     }

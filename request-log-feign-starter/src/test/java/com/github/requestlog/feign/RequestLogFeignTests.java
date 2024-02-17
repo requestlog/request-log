@@ -19,6 +19,8 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+import static com.github.requestlog.test.util.ObjectUtil.asStringPretty;
+
 
 @SpringBootTest(
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
@@ -67,7 +69,7 @@ public class RequestLogFeignTests {
         assert inMemoryRequestLogRepository.getRequestLogSize() - size == expectsLogIncrease;
 
         if (expectsLogIncrease > 0) {
-            log.info("last generated request-log: {}", inMemoryRequestLogRepository.getLastRequestLog());
+            log.info("last generated request-log: \n{}", asStringPretty(inMemoryRequestLogRepository.getLastRequestLog()));
         }
 
     }

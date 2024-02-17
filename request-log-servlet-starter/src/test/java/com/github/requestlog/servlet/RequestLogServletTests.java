@@ -19,6 +19,7 @@ import java.util.function.BiFunction;
 import java.util.stream.Stream;
 
 import static com.github.requestlog.servlet.controller.TestServletLogRestController.*;
+import static com.github.requestlog.test.util.ObjectUtil.asStringPretty;
 
 
 @SpringBootTest(
@@ -69,7 +70,7 @@ public class RequestLogServletTests {
         assert inMemoryRequestLogRepository.getRequestLogSize() - size == expectsLogIncrease;
 
         if (expectsLogIncrease > 0) {
-            log.info("last generated request-log: {}", inMemoryRequestLogRepository.getLastRequestLog());
+            log.info("last generated request-log: \n{}", asStringPretty(inMemoryRequestLogRepository.getLastRequestLog()));
         }
 
     }
@@ -127,7 +128,7 @@ public class RequestLogServletTests {
         assert inMemoryRequestLogRepository.getRequestLogSize() - size == expectsLogIncrease;
 
         if (expectsLogIncrease > 0) {
-            log.info("last generated request-log: {}", inMemoryRequestLogRepository.getLastRequestLog());
+            log.info("last generated request-log: \n{}", asStringPretty(inMemoryRequestLogRepository.getLastRequestLog()));
         }
 
     }

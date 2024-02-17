@@ -29,6 +29,7 @@ import java.util.function.BiFunction;
 import java.util.stream.Stream;
 
 import static com.github.requestlog.test.controller.TestRestController.*;
+import static com.github.requestlog.test.util.ObjectUtil.asStringPretty;
 
 
 @SpringBootTest(
@@ -85,7 +86,7 @@ public class RequestLogRestTemplateRetryTests {
 
         // Verify that a retry job is generated and saved
         assert inMemoryRequestLogRepository.getRequestRetryJobSize() == retryJobSize + 1;
-        log.info("retry job generated: {}", inMemoryRequestLogRepository.getLastRetryJob());
+        log.info("retry job generated: \n{}", asStringPretty(inMemoryRequestLogRepository.getLastRetryJob()));
     }
 
 
@@ -132,9 +133,9 @@ public class RequestLogRestTemplateRetryTests {
         // Generate and save current retry log.
         inMemoryRequestLogRepository.saveRequestRetryLog(retryResult.generateRetryLog());
 
-        log.info("last generated RequestLog: {}", inMemoryRequestLogRepository.getLastRequestLog());
-        log.info("last generated RequestRetryJob: {}", inMemoryRequestLogRepository.getLastRetryJob());
-        log.info("last generated RequestRetryLog: {}", inMemoryRequestLogRepository.getLastRetryLog());
+        log.info("last generated RequestLog: \n{}", asStringPretty(inMemoryRequestLogRepository.getLastRequestLog()));
+        log.info("last generated RequestRetryJob: \n{}", asStringPretty(inMemoryRequestLogRepository.getLastRetryJob()));
+        log.info("last generated RequestRetryLog: \n{}", asStringPretty(inMemoryRequestLogRepository.getLastRetryLog()));
 
     }
 
