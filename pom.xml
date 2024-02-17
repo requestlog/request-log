@@ -35,6 +35,7 @@
         <module>request-log-feign-starter</module>
         <module>request-log-servlet-starter</module>
         <module>request-log-apache-http-client-starter</module>
+        <module>request-log-ok-http-starter</module>
     </modules>
 
     <dependencies>

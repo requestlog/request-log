@@ -10,5 +10,6 @@ public enum RequestContextType {
     FEIGN,
     SERVLET,
     APACHE_HTTP_CLIENT,
+    OK_HTTP,
 
 }
