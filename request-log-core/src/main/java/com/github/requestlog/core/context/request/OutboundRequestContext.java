@@ -4,7 +4,7 @@ package com.github.requestlog.core.context.request;
 import com.github.requestlog.core.context.LogContext;
 import com.github.requestlog.core.enums.RequestLogErrorType;
 import com.github.requestlog.core.enums.RetryWaitStrategy;
-import com.github.requestlog.core.model.HttpRequestContextModel;
+import com.github.requestlog.core.model.HttpRequestContext;
 import com.github.requestlog.core.model.RequestRetryJob;
 import com.github.requestlog.core.support.CollectionUtils;
 import com.github.requestlog.core.support.Predicates;
@@ -43,10 +43,10 @@ public abstract class OutboundRequestContext extends BaseRequestContext {
         }
 
 
-        Predicate<HttpRequestContextModel> httpResponsePredicate = SupplierChain.of(logContext.getHttpResponsePredicate()).or(Predicates.getResponsePredicate(getRequestContextType())).get();
+        Predicate<HttpRequestContext> httpResponsePredicate = SupplierChain.of(logContext.getHttpResponsePredicate()).or(Predicates.getResponsePredicate(getRequestContextType())).get();
 
         // TODO: 2024/1/31 catch predicate error
-        if (super.logRequestCache = httpResponsePredicate.test(buildHttpRequestContextModel())) {
+        if (super.logRequestCache = httpResponsePredicate.test(buildHttpRequestContext())) {
             requestLogErrorType = RequestLogErrorType.RESPONSE;
         }
 
@@ -81,18 +81,18 @@ public abstract class OutboundRequestContext extends BaseRequestContext {
 
 
     // TODO: 2024/2/12 super?
-    public HttpRequestContextModel buildHttpRequestContextModel() {
-        HttpRequestContextModel httpRequestContext = new HttpRequestContextModel();
-        httpRequestContext.setHttpMethod(getRequestMethod());
-        httpRequestContext.setRequestContextType(getRequestContextType());
-        httpRequestContext.setRequestUrl(getRequestUrl());
-        httpRequestContext.setRequestPath(getRequestPath());
-        httpRequestContext.setRequestHeaders(CollectionUtils.unmodifiableMap(getRequestHeaders()));
-        httpRequestContext.setRequestBody(getRequestBody());
-        httpRequestContext.setResponseCode(getResponseCode());
-        httpRequestContext.setResponseHeaders(CollectionUtils.unmodifiableMap(getResponseHeaders()));
-        httpRequestContext.setResponseBody(getResponseBody());
-        return httpRequestContext;
+    public HttpRequestContext buildHttpRequestContext() {
+        HttpRequestContext requestContext = new HttpRequestContext();
+        requestContext.setHttpMethod(getRequestMethod());
+        requestContext.setRequestContextType(getRequestContextType());
+        requestContext.setRequestUrl(getRequestUrl());
+        requestContext.setRequestPath(getRequestPath());
+        requestContext.setRequestHeaders(CollectionUtils.unmodifiableMap(getRequestHeaders()));
+        requestContext.setRequestBody(getRequestBody());
+        requestContext.setResponseCode(getResponseCode());
+        requestContext.setResponseHeaders(CollectionUtils.unmodifiableMap(getResponseHeaders()));
+        requestContext.setResponseBody(getResponseBody());
+        return requestContext;
     }
 
 }

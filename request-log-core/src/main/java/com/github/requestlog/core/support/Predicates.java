@@ -1,7 +1,7 @@
 package com.github.requestlog.core.support;
 
 import com.github.requestlog.core.enums.RequestContextType;
-import com.github.requestlog.core.model.HttpRequestContextModel;
+import com.github.requestlog.core.model.HttpRequestContext;
 import org.springframework.util.Assert;
 
 import java.util.Collections;
@@ -24,7 +24,7 @@ public class Predicates {
     /**
      * Default global http response predicate.
      */
-    public static final Predicate<HttpRequestContextModel> DEFAULT_HTTP_RESPONSE_PREDICATE = (requestContext) -> requestContext.getResponseCode() == null || !requestContext.getResponseCode().equals(200);
+    public static final Predicate<HttpRequestContext> DEFAULT_HTTP_RESPONSE_PREDICATE = (requestContext) -> requestContext.getResponseCode() == null || !requestContext.getResponseCode().equals(200);
 
 
     /**
@@ -37,14 +37,14 @@ public class Predicates {
      * Custom global http response predicate.
      * Overrides {@link #DEFAULT_HTTP_RESPONSE_PREDICATE}
      */
-    private static Predicate<HttpRequestContextModel> CUSTOM_HTTP_RESPONSE_PREDICATE = null;
+    private static Predicate<HttpRequestContext> CUSTOM_HTTP_RESPONSE_PREDICATE = null;
 
 
     /**
      * Custom predicates for exceptions, http response.
      */
     private static final Map<RequestContextType, Predicate<Exception>> CUSTOM_EXCEPTION_PREDICATE_MAP = Collections.synchronizedMap(new HashMap<>(16));
-    private static final Map<RequestContextType, Predicate<HttpRequestContextModel>> CUSTOM_HTTP_RESPONSE_PREDICATE_MAP = Collections.synchronizedMap(new HashMap<>(16));
+    private static final Map<RequestContextType, Predicate<HttpRequestContext>> CUSTOM_HTTP_RESPONSE_PREDICATE_MAP = Collections.synchronizedMap(new HashMap<>(16));
 
 
     /**
@@ -73,7 +73,7 @@ public class Predicates {
      * @param httpRequestContextPredicate Predicate for check http response.
      * @param requestContextTypes         The specific type for override, or null if no type restriction.
      */
-    public static void registerResponse(Predicate<HttpRequestContextModel> httpRequestContextPredicate, RequestContextType... requestContextTypes) {
+    public static void registerResponse(Predicate<HttpRequestContext> httpRequestContextPredicate, RequestContextType... requestContextTypes) {
         Assert.notNull(httpRequestContextPredicate, "httpRequestContextPredicate can not be null");
         if (requestContextTypes.length == 0) {
             CUSTOM_HTTP_RESPONSE_PREDICATE = httpRequestContextPredicate;
@@ -98,7 +98,7 @@ public class Predicates {
     /**
      * Get http response code and body predicate by {@link RequestContextType}, multiple candidate order by scope.
      */
-    public static Predicate<HttpRequestContextModel> getResponsePredicate(RequestContextType requestContextType) {
+    public static Predicate<HttpRequestContext> getResponsePredicate(RequestContextType requestContextType) {
         return SupplierChain.of(CUSTOM_HTTP_RESPONSE_PREDICATE_MAP.get(requestContextType))
                 .or(CUSTOM_HTTP_RESPONSE_PREDICATE)
                 .or(DEFAULT_HTTP_RESPONSE_PREDICATE)

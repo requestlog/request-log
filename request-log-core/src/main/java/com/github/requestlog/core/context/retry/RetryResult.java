@@ -3,7 +3,7 @@ package com.github.requestlog.core.context.retry;
 
 import com.github.requestlog.core.context.RetryContext;
 import com.github.requestlog.core.enums.RetryClientType;
-import com.github.requestlog.core.model.HttpRequestContextModel;
+import com.github.requestlog.core.model.HttpRequestContext;
 import com.github.requestlog.core.model.RequestRetryJob;
 import com.github.requestlog.core.model.RequestRryLog;
 import lombok.Getter;
@@ -19,15 +19,15 @@ import java.util.Optional;
 @Getter
 public class RetryResult {
 
-    public RetryResult(RetryClientType retryClientType, long executeTimeMillis, RetryContext retryContext, HttpRequestContextModel httpRequestContextModel) {
-        this(retryClientType, executeTimeMillis, retryContext, httpRequestContextModel, null);
+    public RetryResult(RetryClientType retryClientType, long executeTimeMillis, RetryContext retryContext, HttpRequestContext requestContext) {
+        this(retryClientType, executeTimeMillis, retryContext, requestContext, null);
     }
 
-    public RetryResult(RetryClientType retryClientType, long executeTimeMillis, RetryContext retryContext, HttpRequestContextModel httpRequestContextModel, Exception exception) {
+    public RetryResult(RetryClientType retryClientType, long executeTimeMillis, RetryContext retryContext, HttpRequestContext requestContext, Exception exception) {
         this.retryClientType = retryClientType;
         this.executeTimeMillis = executeTimeMillis;
         this.retryContext = retryContext;
-        this.httpRequestContextModel = httpRequestContextModel;
+        this.requestContext = requestContext;
         this.exception = exception;
     }
 
@@ -51,7 +51,7 @@ public class RetryResult {
     private final Exception exception;
 
     @Getter
-    private final HttpRequestContextModel httpRequestContextModel;
+    private final HttpRequestContext requestContext;
 
 
     private Boolean succeedCache;
@@ -70,11 +70,11 @@ public class RetryResult {
 
         // custom response predicate
         if (retryContext.getSuccessHttpResponsePredicate() != null) {
-            return (succeedCache = retryContext.getSuccessHttpResponsePredicate().test(httpRequestContextModel));
+            return (succeedCache = retryContext.getSuccessHttpResponsePredicate().test(requestContext));
         }
 
         // default response predicate only checks response code is 200
-        return (succeedCache = (httpRequestContextModel.getResponseCode() != null && httpRequestContextModel.getResponseCode() == 200));
+        return (succeedCache = (requestContext.getResponseCode() != null && requestContext.getResponseCode() == 200));
     }
 
 
@@ -126,12 +126,12 @@ public class RetryResult {
         retryLog.setExecuteTimeMillis(executeTimeMillis);
 
         retryLog.setException(exception);
-        retryLog.setRequestUrl(httpRequestContextModel.getRequestUrl());
-        retryLog.setRequestHeaders(httpRequestContextModel.getRequestHeaders());
-        retryLog.setRequestBody(httpRequestContextModel.getRequestBody());
-        retryLog.setResponseCode(httpRequestContextModel.getResponseCode());
-        retryLog.setResponseHeaders(httpRequestContextModel.getResponseHeaders());
-        retryLog.setResponseBody(httpRequestContextModel.getResponseBody());
+        retryLog.setRequestUrl(requestContext.getRequestUrl());
+        retryLog.setRequestHeaders(requestContext.getRequestHeaders());
+        retryLog.setRequestBody(requestContext.getRequestBody());
+        retryLog.setResponseCode(requestContext.getResponseCode());
+        retryLog.setResponseHeaders(requestContext.getResponseHeaders());
+        retryLog.setResponseBody(requestContext.getResponseBody());
 
         return (requestRryLogCache = retryLog);
     }

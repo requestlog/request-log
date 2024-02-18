@@ -60,9 +60,9 @@ public class ApacheHttpClientRetryClient extends RetryClient<HttpClient> {
             HttpClientUtils.convertEntityRepeatable(request);
             HttpResponse response = httpClient.execute(httpHost, request);
             HttpClientUtils.convertEntityRepeatable(response);
-            result = new RetryResult(RetryClientType.APACHE_HTTP_CLIENT, timeMillis, retryContext, new ApacheHttpClientRequestContext(null, httpHost, request, response).buildHttpRequestContextModel());
+            result = new RetryResult(RetryClientType.APACHE_HTTP_CLIENT, timeMillis, retryContext, new ApacheHttpClientRequestContext(null, httpHost, request, response).buildHttpRequestContext());
         } catch (Exception e) {
-            result = new RetryResult(RetryClientType.APACHE_HTTP_CLIENT, timeMillis, retryContext, new ApacheHttpClientRequestContext(null, httpHost, request, e).buildHttpRequestContextModel());
+            result = new RetryResult(RetryClientType.APACHE_HTTP_CLIENT, timeMillis, retryContext, new ApacheHttpClientRequestContext(null, httpHost, request, e).buildHttpRequestContext());
         }
 
         return result;

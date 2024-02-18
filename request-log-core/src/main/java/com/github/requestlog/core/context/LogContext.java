@@ -2,7 +2,7 @@ package com.github.requestlog.core.context;
 
 
 import com.github.requestlog.core.enums.RetryWaitStrategy;
-import com.github.requestlog.core.model.HttpRequestContextModel;
+import com.github.requestlog.core.model.HttpRequestContext;
 import com.github.requestlog.core.support.function.RunnableExp;
 import com.github.requestlog.core.support.function.SupplierExp;
 import lombok.Getter;
@@ -72,7 +72,7 @@ public final class LogContext {
      * overrides global predicates.
      */
     @Getter
-    private Predicate<HttpRequestContextModel> httpResponsePredicate;
+    private Predicate<HttpRequestContext> httpResponsePredicate;
 
 
     /**
@@ -114,10 +114,10 @@ public final class LogContext {
     }
 
     /**
-     * Match by given {@link Predicate<HttpRequestContextModel>}
+     * Match by given {@link Predicate<HttpRequestContext>}
      */
     // TODO: 2024/2/15 change 2 successWhenResponse?
-    public LogContext whenResponse(Predicate<HttpRequestContextModel> httpResponsePredicate) {
+    public LogContext whenResponse(Predicate<HttpRequestContext> httpResponsePredicate) {
         this.httpResponsePredicate = httpResponsePredicate;
         return this;
     }

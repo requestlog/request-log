@@ -60,9 +60,9 @@ public class RestTemplateRetryClient extends RetryClient<RestTemplate> {
                 requestHolder.set(clientHttpRequest);
                 httpClient.httpEntityCallback(requestEntity).doWithRequest(clientHttpRequest);
             }, (ResponseExtractor<ClientHttpResponse>) e -> e);
-            result = new RetryResult(RetryClientType.REST_TEMPLATE, timeMillis, retryContext, new RestTemplateRequestContext(null, requestHolder.get(), null, response).buildHttpRequestContextModel());
+            result = new RetryResult(RetryClientType.REST_TEMPLATE, timeMillis, retryContext, new RestTemplateRequestContext(null, requestHolder.get(), null, response).buildHttpRequestContext());
         } catch (Exception e) {
-            result = new RetryResult(RetryClientType.REST_TEMPLATE, timeMillis, retryContext, new RestTemplateRequestContext(null, requestHolder.get(), null, e).buildHttpRequestContextModel(), e);
+            result = new RetryResult(RetryClientType.REST_TEMPLATE, timeMillis, retryContext, new RestTemplateRequestContext(null, requestHolder.get(), null, e).buildHttpRequestContext(), e);
         }
 
         return result;

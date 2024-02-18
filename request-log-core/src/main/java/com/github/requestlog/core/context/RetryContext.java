@@ -1,7 +1,7 @@
 package com.github.requestlog.core.context;
 
 import com.github.requestlog.core.context.retry.RetryClient;
-import com.github.requestlog.core.model.HttpRequestContextModel;
+import com.github.requestlog.core.model.HttpRequestContext;
 import com.github.requestlog.core.model.RequestLog;
 import com.github.requestlog.core.model.RequestRetryJob;
 import com.github.requestlog.core.repository.IRequestLogRepository;
@@ -94,7 +94,7 @@ public class RetryContext {
     private Function<String, String> rewriteQueryFunction;
     private Function<String, String> rewriteFragmentFunction;
 
-    private Predicate<HttpRequestContextModel> successHttpResponsePredicate;
+    private Predicate<HttpRequestContext> successHttpResponsePredicate;
 
 
     /**
@@ -201,7 +201,7 @@ public class RetryContext {
      *
      * @param successHttpResponsePredicate Predicate that returns true if the response is considered successful.
      */
-    public RetryContext successWhenResponse(Predicate<HttpRequestContextModel> successHttpResponsePredicate) {
+    public RetryContext successWhenResponse(Predicate<HttpRequestContext> successHttpResponsePredicate) {
         this.successHttpResponsePredicate = successHttpResponsePredicate;
         return this;
     }

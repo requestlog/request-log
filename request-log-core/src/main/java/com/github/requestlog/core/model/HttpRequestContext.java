@@ -8,8 +8,11 @@ import java.util.List;
 import java.util.Map;
 
 
+/**
+ * Http request context pojo.
+ */
 @Data
-public class HttpRequestContextModel {
+public class HttpRequestContext {
 
     private HttpMethod httpMethod;
     private RequestContextType requestContextType;
@@ -19,6 +22,7 @@ public class HttpRequestContextModel {
     private Map<String, List<String>> requestHeaders;
     private String requestBody;
 
+    // When an exception occurs during the request, the response-related fields will be null.
     private Integer responseCode;
     private Map<String, List<String>> responseHeaders;
     private String responseBody;
