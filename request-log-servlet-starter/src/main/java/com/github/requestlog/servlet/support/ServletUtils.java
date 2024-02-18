@@ -1,6 +1,10 @@
 package com.github.requestlog.servlet.support;
 
 import com.github.requestlog.servlet.support.http.BodyRepeatableReadCapability;
+import org.springframework.util.StringUtils;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.util.ContentCachingRequestWrapper;
 import org.springframework.web.util.ContentCachingResponseWrapper;
 
@@ -10,6 +14,8 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.*;
+
+import static com.github.requestlog.core.constant.Constants.RETRY_HEADER;
 
 
 /**
@@ -90,6 +96,18 @@ public class ServletUtils {
             headersMap.put(headerName, new ArrayList<>(response.getHeaders(headerName)));
         }
         return headersMap;
+    }
+
+
+    /**
+     * Check if the current request is a retry request based on the request headers.
+     */
+    public static boolean isCurrentRequestRetry() {
+        RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
+        if (!(requestAttributes instanceof ServletRequestAttributes)) {
+            return false;
+        }
+        return StringUtils.hasText(((ServletRequestAttributes) requestAttributes).getRequest().getHeader(RETRY_HEADER));
     }
 
 }

@@ -2,6 +2,7 @@ package com.github.requestlog.apachehttpclient.support;
 
 import com.github.requestlog.apachehttpclient.context.request.ApacheHttpClientRequestContext;
 import com.github.requestlog.core.context.LogContext;
+import com.github.requestlog.core.context.RetryContext;
 import com.github.requestlog.core.handler.AbstractRequestLogHandler;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -61,7 +62,8 @@ public class HttpClientRequestLogDecorator implements HttpClient {
     @Override
     public HttpResponse execute(HttpHost target, HttpRequest request, HttpContext context) throws IOException, ClientProtocolException {
 
-        if (LogContext.THREAD_LOCAL.get() == null) {
+        // Skipped, no logging is specified or current request contains retry.
+        if (LogContext.THREAD_LOCAL.get() == null || RetryContext.THREAD_LOCAL.get() != null) {
             return httpClientTarget.execute(target, request, context);
         }
 

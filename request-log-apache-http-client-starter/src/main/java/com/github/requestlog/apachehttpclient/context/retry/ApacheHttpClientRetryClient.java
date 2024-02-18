@@ -14,8 +14,11 @@ import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
+import org.apache.http.message.BasicHeader;
 
 import java.net.URI;
+
+import static com.github.requestlog.core.constant.Constants.RETRY_HEADER;
 
 
 /**
@@ -54,6 +57,7 @@ public class ApacheHttpClientRetryClient extends RetryClient<HttpClient> {
         }
 
         request.setHeaders(HttpClientUtils.convertToHeaders(retryContext.buildRequestHeaders()));
+        request.addHeader(new BasicHeader(RETRY_HEADER, generateRetryHeaderValue()));
 
         RetryResult result = null;
         try {

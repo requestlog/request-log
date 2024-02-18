@@ -1,6 +1,7 @@
 package com.github.requestlog.okhttp.interceptor;
 
 import com.github.requestlog.core.context.LogContext;
+import com.github.requestlog.core.context.RetryContext;
 import com.github.requestlog.core.handler.AbstractRequestLogHandler;
 import com.github.requestlog.okhttp.context.request.OkHttpRequestContext;
 import com.github.requestlog.okhttp.support.OkHttpUtils;
@@ -26,7 +27,8 @@ public class RequestLogOkHttpInterceptor implements Interceptor {
     @Override
     public Response intercept(Chain chain) throws IOException {
 
-        if (LogContext.THREAD_LOCAL.get() == null) {
+        // Skipped, no logging is specified or current request contains retry.
+        if (LogContext.THREAD_LOCAL.get() == null || RetryContext.THREAD_LOCAL.get() != null) {
             return chain.proceed(chain.request());
         }
 

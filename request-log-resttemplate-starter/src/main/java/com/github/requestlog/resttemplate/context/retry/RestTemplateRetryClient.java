@@ -7,6 +7,7 @@ import com.github.requestlog.core.enums.RetryClientType;
 import com.github.requestlog.resttemplate.context.request.RestTemplateRequestContext;
 import com.github.requestlog.resttemplate.support.RestTemplateUtils;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
@@ -14,6 +15,8 @@ import org.springframework.web.client.ResponseExtractor;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.concurrent.atomic.AtomicReference;
+
+import static com.github.requestlog.core.constant.Constants.RETRY_HEADER;
 
 
 /**
@@ -50,8 +53,10 @@ public class RestTemplateRetryClient extends RetryClient<RestTemplate> {
         // before execute time millis
         final long timeMillis = System.currentTimeMillis();
 
+        HttpHeaders headers = RestTemplateUtils.convert2HttpHeaders(retryContext.buildRequestHeaders());
+        headers.add(RETRY_HEADER, generateRetryHeaderValue());
 
-        HttpEntity<String> requestEntity = new HttpEntity<>(retryContext.buildRequestBody(), RestTemplateUtils.convert2HttpHeaders(retryContext.buildRequestHeaders()));
+        HttpEntity<String> requestEntity = new HttpEntity<>(retryContext.buildRequestBody(), headers);
 
         AtomicReference<ClientHttpRequest> requestHolder = new AtomicReference<>();
         RetryResult result = null;

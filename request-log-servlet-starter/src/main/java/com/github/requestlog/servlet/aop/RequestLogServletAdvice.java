@@ -3,6 +3,7 @@ package com.github.requestlog.servlet.aop;
 import com.github.requestlog.core.handler.AbstractRequestLogHandler;
 import com.github.requestlog.servlet.annotation.ReqLog;
 import com.github.requestlog.servlet.context.request.ServletRequestContext;
+import com.github.requestlog.servlet.support.ServletUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -30,7 +31,7 @@ public class RequestLogServletAdvice {
     @Around("@annotation(reqLog)")
     public Object aroundHandleException(ProceedingJoinPoint joinPoint, ReqLog reqLog) throws Throwable {
 
-        if (THREAD_LOCAL.get() != null) {
+        if (THREAD_LOCAL.get() != null || ServletUtils.isCurrentRequestRetry()) {
             return joinPoint.proceed();
         }
 

@@ -1,8 +1,9 @@
 package com.github.requestlog.resttemplate.interceptor;
 
 import com.github.requestlog.core.context.LogContext;
-import com.github.requestlog.resttemplate.context.request.RestTemplateRequestContext;
+import com.github.requestlog.core.context.RetryContext;
 import com.github.requestlog.core.handler.AbstractRequestLogHandler;
+import com.github.requestlog.resttemplate.context.request.RestTemplateRequestContext;
 import com.github.requestlog.resttemplate.support.RestTemplateUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpRequest;
@@ -26,8 +27,8 @@ public class RequestLogRestTemplateInterceptor implements ClientHttpRequestInter
     @Override
     public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution) throws IOException {
 
-        // Skipped, no logging is specified.
-        if (LogContext.THREAD_LOCAL.get() == null) {
+        // Skipped, no logging is specified or current request contains retry.
+        if (LogContext.THREAD_LOCAL.get() == null || RetryContext.THREAD_LOCAL.get() != null) {
             return execution.execute(request, body);
         }
 

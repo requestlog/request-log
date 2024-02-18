@@ -1,6 +1,7 @@
 package com.github.requestlog.feign.aop;
 
 import com.github.requestlog.core.context.LogContext;
+import com.github.requestlog.core.context.RetryContext;
 import com.github.requestlog.core.handler.AbstractRequestLogHandler;
 import com.github.requestlog.feign.context.request.FeignRequestContext;
 import com.github.requestlog.feign.support.FeignUtils;
@@ -28,7 +29,8 @@ public class RequestLogFeignAdvice {
     @Around("execution(* feign.Client.execute(..))")
     public Object around(ProceedingJoinPoint joinPoint) throws Throwable {
 
-        if (LogContext.THREAD_LOCAL.get() == null) {
+        // Skipped, no logging is specified or current request contains retry.
+        if (LogContext.THREAD_LOCAL.get() == null || RetryContext.THREAD_LOCAL.get() != null) {
             return joinPoint.proceed();
         }
 

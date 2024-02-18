@@ -16,12 +16,11 @@ import java.util.function.Function;
 @RequiredArgsConstructor
 public abstract class RetryClient<C> {
 
-    protected final RetryContext retryContext;
-
 
     public static final Map<Class<? extends RetryClient<?>>, Function<RetryContext, RetryClient<?>>> NEW_INSTANCE_MAP = new HashMap<>();
 
 
+    protected final RetryContext retryContext;
 
     protected C httpClient;
 
@@ -45,6 +44,13 @@ public abstract class RetryClient<C> {
     }
 
     protected abstract RetryResult doExecute();
+
+
+    protected String generateRetryHeaderValue() {
+        // TODO: 2024/2/18 generate retry header from retryContext.requestLog retryContext.requestRetryJob(may be null)
+        //  maybe define some method like #getId、#getId4Retry
+        return "123";
+    }
 
 
     // TODO: 2024/2/14 checks if the retryContext executable
