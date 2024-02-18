@@ -4,17 +4,13 @@ package com.github.requestlog.apachehttpclient;
 import com.github.requestlog.core.context.LogContext;
 import com.github.requestlog.core.repository.impl.InMemoryRequestLogRepository;
 import com.github.requestlog.core.support.function.SupplierExp;
-import com.github.requestlog.test.model.RequestParamModel;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.methods.RequestBuilder;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.message.BasicNameValuePair;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -25,18 +21,16 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.util.StreamUtils;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import static com.github.requestlog.apachehttpclient.support.HttpClientTestUtils.createRandomFormEntity;
+import static com.github.requestlog.apachehttpclient.support.HttpClientTestUtils.createRandomJsonStringEntity;
 import static com.github.requestlog.test.controller.TestRestController.*;
 import static com.github.requestlog.test.util.ObjectUtil.asStringPretty;
 import static org.apache.http.entity.ContentType.APPLICATION_FORM_URLENCODED;
 import static org.apache.http.entity.ContentType.APPLICATION_JSON;
-
 
 @SpringBootTest(
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
@@ -163,43 +157,6 @@ public class RequestLogApacheHttpClientTests {
                 Arguments.of(httpHostFunction, RequestBuilder.post(JSON_POST_ERROR_PATH).setHeader("content-type", APPLICATION_JSON.getMimeType()).setEntity(createRandomJsonStringEntity()).build(), false, true, 1)
 
         );
-    }
-
-    private static StringEntity createRandomJsonStringEntity() {
-        return new StringEntity(RequestParamModel.randomJson(), "UTF-8");
-    }
-
-    private static UrlEncodedFormEntity createRandomFormEntity() {
-        RequestParamModel randomModel = RequestParamModel.randomObj();
-
-        List<BasicNameValuePair> parameters = new ArrayList<>();
-
-        addParameter(parameters, "stringValue", randomModel.getStringValue());
-        addParameter(parameters, "intValue", randomModel.getIntValue());
-        addParameter(parameters, "booleanValue", randomModel.getBooleanValue());
-        addParameterList(parameters, "stringList", randomModel.getStringList());
-        addParameterList(parameters, "integerList", randomModel.getIntegerList());
-
-        try {
-            return new UrlEncodedFormEntity(parameters);
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
-
-    }
-
-    private static void addParameter(List<BasicNameValuePair> parameters, String paramName, Object paramValue) {
-        if (paramValue != null) {
-            parameters.add(new BasicNameValuePair(paramName, paramValue.toString()));
-        }
-    }
-
-    private static void addParameterList(List<BasicNameValuePair> parameters, String paramName, List<?> paramValues) {
-        if (paramValues != null && !paramValues.isEmpty()) {
-            for (Object value : paramValues) {
-                addParameter(parameters, paramName, value);
-            }
-        }
     }
 
 

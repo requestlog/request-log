@@ -28,4 +28,13 @@ public enum HttpMethod {
         return UPPERCASE_NAME_MAP.get(httpMethodName.toUpperCase());
     }
 
+
+    /**
+     * Check if this HTTP method supports a request body.
+     */
+    public boolean supportsRequestBody() {
+        return this == POST || this == PUT || this == DELETE || this == PATCH;
+    }
+
+
 }

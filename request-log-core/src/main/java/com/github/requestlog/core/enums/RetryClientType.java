@@ -7,5 +7,6 @@ package com.github.requestlog.core.enums;
 public enum RetryClientType {
 
     REST_TEMPLATE,
+    APACHE_HTTP_CLIENT,
 
 }

@@ -7,6 +7,7 @@ import com.github.requestlog.core.model.RequestRetryJob;
 import com.github.requestlog.core.repository.IRequestLogRepository;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
 import java.net.URI;
@@ -54,20 +55,34 @@ public class RetryContext {
         return new RetryContext(requestLog, retryJob);
     }
 
-    @SuppressWarnings("unchecked")
-    public <T extends RetryClient> T with(Class<T> retryClientClazz) {
 
-        Function<RetryContext, RetryClient> function = RetryClient.NEW_INSTANCE_MAP.get(retryClientClazz);
+    public <C, T extends RetryClient<C>> T with(Class<T> retryClientClazz) {
+        return with(retryClientClazz, null);
+    }
+
+
+    @SuppressWarnings("unchecked")
+    public <C, T extends RetryClient<C>> T with(Class<T> retryClientClazz, @Nullable C httpClient) {
+
+        T retryClient = null;
+
+        Function<RetryContext, RetryClient<?>> function = RetryClient.NEW_INSTANCE_MAP.get(retryClientClazz);
         if (function != null) {
-            return (T) function.apply(this);
+            retryClient = (T) function.apply(this);
         }
 
         // RetryClient 子类可能没有加载，没有将 Function 注册进去，这里尝试使用反射
         try {
-            return retryClientClazz.getConstructor(RetryContext.class).newInstance(this);
+            retryClient = retryClientClazz.getConstructor(RetryContext.class).newInstance(this);
         } catch (Exception ignored) {
         }
-        throw new IllegalArgumentException();
+
+        if (retryClient == null) {
+            throw new IllegalArgumentException();
+        }
+
+        retryClient.setHttpClient(httpClient);
+        return retryClient;
     }
 
 

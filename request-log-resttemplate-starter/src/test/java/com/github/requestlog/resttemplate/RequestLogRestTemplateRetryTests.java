@@ -121,8 +121,7 @@ public class RequestLogRestTemplateRetryTests {
         RetryResult retryResult = RetryContext.create(inMemoryRequestLogRepository.getLastRequestLog(), inMemoryRequestLogRepository.getLastRetryJob())
                 .rewritePath(retryRequestPath) // maybe same with original request
                 .successWhenResponse((requestContext) -> requestContext.getResponseCode() == 200)
-                .with(RestTemplateRetryClient.class)
-                .client(restTemplate)
+                .with(RestTemplateRetryClient.class, restTemplate)
                 .execute();
 
         assert retryResult.succeed() == retrySucceed;

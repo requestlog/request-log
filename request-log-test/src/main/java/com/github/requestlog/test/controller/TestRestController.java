@@ -22,37 +22,37 @@ public class TestRestController {
     public static final String JSON_POST_ERROR_PATH = PREFIX + "/jsonPostError";
 
 
-    @GetMapping(GET_PATH)
+    @RequestMapping(value = GET_PATH, method =  {RequestMethod.GET, RequestMethod.HEAD, RequestMethod.OPTIONS, RequestMethod.TRACE})
     public ResponseModel get() {
         return new ResponseModel(200);
     }
 
 
-    @GetMapping(GET_ERROR_PATH)
+    @RequestMapping(value = GET_ERROR_PATH, method =  {RequestMethod.GET, RequestMethod.HEAD, RequestMethod.OPTIONS, RequestMethod.TRACE})
     public ResponseModel getError() {
         throw new RuntimeException("manually thrown exception 4 getError");
     }
 
 
-    @PostMapping(value = FORM_POST_PATH, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    @RequestMapping(value = FORM_POST_PATH, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE, method = {RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.PATCH})
     public ResponseModel formPost(@ModelAttribute RequestParamModel param) {
         log.debug("formPost param: {}", param);
         return new ResponseModel(200);
     }
 
-    @PostMapping(value = FORM_POST_ERROR_PATH, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    @RequestMapping(value = FORM_POST_ERROR_PATH, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE, method = {RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.PATCH})
     public ResponseModel formPostError(@ModelAttribute RequestParamModel param) {
         log.debug("formPostError param: {}", param);
         throw new RuntimeException("manually thrown exception 4 formPostError");
     }
 
-    @PostMapping(value = JSON_POST_PATH, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = JSON_POST_PATH, consumes = MediaType.APPLICATION_JSON_VALUE, method = {RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.PATCH})
     public ResponseModel jsonPost(@RequestBody RequestParamModel param) {
         log.debug("jsonPost param: {}", param);
         return new ResponseModel(200);
     }
 
-    @PostMapping(value = JSON_POST_ERROR_PATH, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = JSON_POST_ERROR_PATH, consumes = MediaType.APPLICATION_JSON_VALUE, method = {RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.PATCH})
     public ResponseModel jsonPostError(@RequestBody RequestParamModel param) {
         log.debug("jsonPostError param: {}", param);
         throw new RuntimeException("manually thrown exception 4 jsonPostError");

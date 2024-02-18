@@ -4,7 +4,9 @@ import org.apache.http.*;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.BufferedHttpEntity;
+import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicHeaderValueParser;
+import org.springframework.util.CollectionUtils;
 
 import java.io.IOException;
 import java.net.URI;
@@ -42,7 +44,7 @@ public class HttpClientUtils {
             return;
         }
         HttpEntity httpEntity = response.getEntity();
-        if (httpEntity == null || httpEntity.getContentLength() <= 0 || httpEntity instanceof BufferedHttpEntity) {
+        if (httpEntity == null || httpEntity instanceof BufferedHttpEntity) {
             return;
         }
         response.setEntity(new BufferedHttpEntity(httpEntity));
@@ -64,6 +66,25 @@ public class HttpClientUtils {
         }
 
         return headersMap;
+    }
+
+
+    /**
+     * Converts a Map of header names and values into an array of {@link Header} objects.
+     */
+    public static Header[] convertToHeaders(Map<String, List<String>> headerMap) {
+        if (CollectionUtils.isEmpty(headerMap)) {
+            return new Header[0];
+        }
+
+        List<Header> headers = new ArrayList<>();
+        for (Map.Entry<String, List<String>> entry : headerMap.entrySet()) {
+            String name = entry.getKey();
+            for (String value : entry.getValue()) {
+                headers.add(new BasicHeader(name, value));
+            }
+        }
+        return headers.toArray(new Header[0]);
     }
 
 
