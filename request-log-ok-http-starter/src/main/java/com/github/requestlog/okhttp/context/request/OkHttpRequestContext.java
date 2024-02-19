@@ -4,13 +4,15 @@ import com.github.requestlog.core.context.LogContext;
 import com.github.requestlog.core.context.request.OutboundRequestContext;
 import com.github.requestlog.core.enums.HttpMethod;
 import com.github.requestlog.core.enums.RequestContextType;
+import com.github.requestlog.core.support.HttpUtils;
 import com.github.requestlog.okhttp.support.OkHttpUtils;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
+import okhttp3.*;
+import org.springframework.util.StringUtils;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 
 /**
@@ -62,7 +64,17 @@ public class OkHttpRequestContext extends OutboundRequestContext {
         if (requestHeadersCache != null) {
             return requestHeadersCache;
         }
-        return (requestHeadersCache = request.headers().toMultimap());
+        requestHeadersCache = request.headers().toMultimap();
+
+        // Ok Http request with missing content-type situation, try get from RequestBody.
+        if (getRequestMethod().supportsRequestBody()) {
+            if (!StringUtils.hasText(HttpUtils.findContentType(requestHeadersCache))) {
+                Optional.ofNullable(request.body())
+                        .map(RequestBody::contentType).map(MediaType::toString).filter(StringUtils::hasText)
+                        .ifPresent(e -> requestHeadersCache.put("Content-Type", Collections.singletonList(e)));
+            }
+        }
+        return requestHeadersCache;
     }
 
 

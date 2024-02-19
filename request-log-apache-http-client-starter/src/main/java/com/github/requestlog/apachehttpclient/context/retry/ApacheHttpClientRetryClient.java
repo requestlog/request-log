@@ -41,9 +41,6 @@ public class ApacheHttpClientRetryClient extends RetryClient<HttpClient> {
 
         // TODO: 2024/2/17 check before execute
 
-        // before execute time millis
-        final long timeMillis = System.currentTimeMillis();
-
         HttpMethod method = retryContext.getRequestLog().getHttpMethod();
 
         URI uri = URI.create(retryContext.buildRequestUrl());
@@ -64,9 +61,9 @@ public class ApacheHttpClientRetryClient extends RetryClient<HttpClient> {
             HttpClientUtils.convertEntityRepeatable(request);
             HttpResponse response = httpClient.execute(httpHost, request);
             HttpClientUtils.convertEntityRepeatable(response);
-            result = new RetryResult(RetryClientType.APACHE_HTTP_CLIENT, timeMillis, retryContext, new ApacheHttpClientRequestContext(null, httpHost, request, response).buildHttpRequestContext());
+            result = new RetryResult(RetryClientType.APACHE_HTTP_CLIENT, beforeDoExecuteTimeMillis, retryContext, new ApacheHttpClientRequestContext(null, httpHost, request, response).buildHttpRequestContext());
         } catch (Exception e) {
-            result = new RetryResult(RetryClientType.APACHE_HTTP_CLIENT, timeMillis, retryContext, new ApacheHttpClientRequestContext(null, httpHost, request, e).buildHttpRequestContext());
+            result = new RetryResult(RetryClientType.APACHE_HTTP_CLIENT, beforeDoExecuteTimeMillis, retryContext, new ApacheHttpClientRequestContext(null, httpHost, request, e).buildHttpRequestContext());
         }
 
         return result;

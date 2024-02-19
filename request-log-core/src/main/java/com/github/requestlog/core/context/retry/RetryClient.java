@@ -28,11 +28,16 @@ public abstract class RetryClient<C> {
         this.httpClient = httpClient;
     }
 
+    /**
+     * Time millis before {@link #doExecute()}
+     */
+    protected long beforeDoExecuteTimeMillis;
 
     public RetryResult execute() {
         RetryContext carry = RetryContext.THREAD_LOCAL.get();
         try {
             RetryContext.THREAD_LOCAL.set(retryContext);
+            beforeDoExecuteTimeMillis = System.currentTimeMillis();
             return doExecute();
         } finally {
             if (carry == null) {

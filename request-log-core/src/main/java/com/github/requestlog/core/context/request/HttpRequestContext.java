@@ -1,7 +1,7 @@
 package com.github.requestlog.core.context.request;
 
 import com.github.requestlog.core.enums.HttpMethod;
-import com.github.requestlog.core.support.CollectionUtils;
+import com.github.requestlog.core.support.HttpUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -19,16 +19,7 @@ public interface HttpRequestContext {
     Map<String, List<String>> getRequestHeaders();
 
     default String getRequestContentType() {
-        Map<String, List<String>> headers = getRequestHeaders();
-        if (CollectionUtils.isEmpty(headers)) {
-            return null;
-        }
-        for (String key : headers.keySet()) {
-            if ("content-type".equalsIgnoreCase(key)) {
-                return CollectionUtils.firstElement(getRequestHeaders().get(key));
-            }
-        }
-        return null;
+        return HttpUtils.findContentType(getRequestHeaders());
     }
 
     String getRequestBody();

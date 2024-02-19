@@ -14,11 +14,11 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.util.CollectionUtils;
 
 import java.io.IOException;
 import java.util.stream.Stream;
 
+import static com.github.requestlog.okhttp.support.OkHttpTestUtils.createRandomFormBody;
 import static com.github.requestlog.test.controller.TestRestController.*;
 import static com.github.requestlog.test.util.ObjectUtil.asStringPretty;
 
@@ -144,22 +144,6 @@ public class RequestLogOkHttpTests {
     }
 
 
-    private static FormBody createRandomFormBody() {
-        RequestParamModel randomModel = RequestParamModel.randomObj();
-
-        FormBody.Builder builder =  new FormBody.Builder()
-                .add("stringValue", randomModel.getStringValue())
-                .add("intValue", String.valueOf(randomModel.getIntValue()))
-                .add("booleanValue", String.valueOf(randomModel.getBooleanValue()));
-        if (!CollectionUtils.isEmpty(randomModel.getStringList())) {
-            randomModel.getStringList().forEach(value -> builder.add("stringList", value));
-        }
-        if (!CollectionUtils.isEmpty(randomModel.getIntegerList())) {
-            randomModel.getIntegerList().forEach(value -> builder.add("integerList", String.valueOf(value)));
-        }
-
-        return builder.build();
-    }
 
 
 }

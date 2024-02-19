@@ -8,5 +8,6 @@ public enum RetryClientType {
 
     REST_TEMPLATE,
     APACHE_HTTP_CLIENT,
+    OK_HTTP,
 
 }

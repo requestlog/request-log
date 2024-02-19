@@ -50,9 +50,6 @@ public class RestTemplateRetryClient extends RetryClient<RestTemplate> {
 
         checkBeforeExecute();
 
-        // before execute time millis
-        final long timeMillis = System.currentTimeMillis();
-
         HttpHeaders headers = RestTemplateUtils.convert2HttpHeaders(retryContext.buildRequestHeaders());
         headers.add(RETRY_HEADER, generateRetryHeaderValue());
 
@@ -65,9 +62,9 @@ public class RestTemplateRetryClient extends RetryClient<RestTemplate> {
                 requestHolder.set(clientHttpRequest);
                 httpClient.httpEntityCallback(requestEntity).doWithRequest(clientHttpRequest);
             }, (ResponseExtractor<ClientHttpResponse>) e -> e);
-            result = new RetryResult(RetryClientType.REST_TEMPLATE, timeMillis, retryContext, new RestTemplateRequestContext(null, requestHolder.get(), null, response).buildHttpRequestContext());
+            result = new RetryResult(RetryClientType.REST_TEMPLATE, beforeDoExecuteTimeMillis, retryContext, new RestTemplateRequestContext(null, requestHolder.get(), null, response).buildHttpRequestContext());
         } catch (Exception e) {
-            result = new RetryResult(RetryClientType.REST_TEMPLATE, timeMillis, retryContext, new RestTemplateRequestContext(null, requestHolder.get(), null, e).buildHttpRequestContext(), e);
+            result = new RetryResult(RetryClientType.REST_TEMPLATE, beforeDoExecuteTimeMillis, retryContext, new RestTemplateRequestContext(null, requestHolder.get(), null, e).buildHttpRequestContext(), e);
         }
 
         return result;
