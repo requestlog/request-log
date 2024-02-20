@@ -7,10 +7,10 @@ import com.github.requestlog.core.support.function.RunnableExp;
 import com.github.requestlog.core.support.function.SupplierExp;
 import lombok.Getter;
 
-import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 
 /**
@@ -63,16 +63,18 @@ public final class LogContext {
     /**
      * Custom exception predicate for current request.
      * overrides global predicates.
+     * Returns true if the {@link Exception} occurred but still considered successful.
      */
     @Getter
-    private Predicate<Exception> exceptionPredicate;
+    private Predicate<Exception> ignoreExceptionPredicate;
 
     /**
      * Custom http predicate for current request.
      * overrides global predicates.
+     * Returns true if the response is considered successful.
      */
     @Getter
-    private Predicate<HttpRequestContext> httpResponsePredicate;
+    private Predicate<HttpRequestContext> successHttpResponsePredicate;
 
 
     /**
@@ -96,31 +98,38 @@ public final class LogContext {
     }
 
     /**
-     * Match exception by type.
+     * Ignore given {@link Exception} types, still consider them as successful when these Exceptions occurred.
      */
-    public LogContext whenException(Class<Exception>... exceptionClasses) {
-        // TODO: 2024/1/27 check none null and not empty
-        assert exceptionClasses != null && exceptionClasses.length > 0;
-        this.exceptionPredicate = (exp) -> Arrays.stream(exceptionClasses).anyMatch(exceptionClass -> exceptionClass.isAssignableFrom(exp.getClass()));
+    public LogContext ignoreException(Class<Exception> ignoreException, Class<Exception>... moreIgnoreExceptions) {
+        this.ignoreExceptionPredicate = (exp) -> Stream.concat(Stream.of(ignoreException), Stream.of(moreIgnoreExceptions)).noneMatch(exceptionClass -> exceptionClass.isAssignableFrom(exp.getClass()));
         return this;
     }
 
     /**
-     * Match by given {@link Predicate<Exception>}
+     * Predicate that returns true if the {@link Exception} occurred but still considered successful.
      */
-    public LogContext whenException(Predicate<Exception> exceptionPredicate) {
-        this.exceptionPredicate = exceptionPredicate;
+    public LogContext ignoreException(Predicate<Exception> ignoreExceptionPredicate) {
+        this.ignoreExceptionPredicate = ignoreExceptionPredicate;
         return this;
     }
 
     /**
-     * Match by given {@link Predicate<HttpRequestContext>}
+     * Checks if the response is successful.
+     * When no custom Predicate is specified, it defaults to checking if the http status code is 2xx.
+     *
+     * @param successHttpResponsePredicate Predicate that returns true if the response is considered successful.
      */
-    // TODO: 2024/2/15 change 2 successWhenResponse?
-    public LogContext whenResponse(Predicate<HttpRequestContext> httpResponsePredicate) {
-        this.httpResponsePredicate = httpResponsePredicate;
+    public LogContext successWhenResponse(Predicate<HttpRequestContext> successHttpResponsePredicate) {
+        this.successHttpResponsePredicate = successHttpResponsePredicate;
         return this;
     }
+
+
+    /**
+     * Time millis before {@link #execute(Supplier)}
+     */
+    @Getter
+    private long beforeExecuteTimeMillis;
 
     /**
      * execute
@@ -141,6 +150,7 @@ public final class LogContext {
         LogContext carry = THREAD_LOCAL.get();
         try {
             THREAD_LOCAL.set(this);
+            beforeExecuteTimeMillis = System.currentTimeMillis();
             return supplier.get();
         } finally {
             if (carry == null) {

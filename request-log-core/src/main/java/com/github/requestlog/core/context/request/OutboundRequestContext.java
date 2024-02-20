@@ -38,15 +38,18 @@ public abstract class OutboundRequestContext extends BaseRequestContext {
 
         if (exception != null) {
             requestLogErrorType = RequestLogErrorType.EXCEPTION;
-            Predicate<Exception> exceptionPredicate = SupplierChain.of(logContext.getExceptionPredicate()).or(Predicates.getExceptionPredicate(getRequestContextType())).get();
-            return super.logRequestCache = exceptionPredicate.test(exception);
+
+            Predicate<Exception> ignoreExceptionPredicate = SupplierChain.of(logContext.getIgnoreExceptionPredicate())
+                    .or(Predicates.getIgnoreExceptionPredicate(getRequestContextType())).get();
+            return super.logRequestCache = !ignoreExceptionPredicate.test(exception);
         }
 
 
-        Predicate<HttpRequestContext> httpResponsePredicate = SupplierChain.of(logContext.getHttpResponsePredicate()).or(Predicates.getResponsePredicate(getRequestContextType())).get();
+        Predicate<HttpRequestContext> successHttpResponsePredicate = SupplierChain.of(logContext.getSuccessHttpResponsePredicate())
+                .or(Predicates.getSuccessHttpResponsePredicate(getRequestContextType())).get();
 
         // TODO: 2024/1/31 catch predicate error
-        if (super.logRequestCache = httpResponsePredicate.test(buildHttpRequestContext())) {
+        if (super.logRequestCache = !successHttpResponsePredicate.test(buildHttpRequestContext())) {
             requestLogErrorType = RequestLogErrorType.RESPONSE;
         }
 
@@ -72,7 +75,7 @@ public abstract class OutboundRequestContext extends BaseRequestContext {
         retryJob.setRequestLog(buildRequestLog());
         retryJob.setRetryWaitStrategy(Optional.ofNullable(logContext.getRetryWaitStrategy()).orElse(RetryWaitStrategy.FIXED));
         retryJob.setRetryInterval(Optional.ofNullable(logContext.getRetryInterval()).orElse(60));
-        retryJob.setLastExecuteTimeMillis(System.currentTimeMillis()); // TODO: 2024/2/13 是否要 interceptor 之前拿取？
+        retryJob.setLastExecuteTimeMillis(logContext.getBeforeExecuteTimeMillis());
         retryJob.setExecuteCount(1);
         retryJob.setNextExecuteTimeMillis(retryJob.getRetryWaitStrategy().nextExecuteTime(retryJob.getLastExecuteTimeMillis(), 1, retryJob.getRetryInterval()));
 

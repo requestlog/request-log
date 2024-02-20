@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 
 @Slf4j
@@ -94,6 +95,7 @@ public class RetryContext {
     private Function<String, String> rewriteQueryFunction;
     private Function<String, String> rewriteFragmentFunction;
 
+    private Predicate<Exception> ignoreExceptionPredicate;
     private Predicate<HttpRequestContext> successHttpResponsePredicate;
 
 
@@ -193,11 +195,26 @@ public class RetryContext {
     }
 
 
-    // TODO: 2024/2/14 normally Exception means failed, ignore some Exception still consider success ?
+    /**
+     * Ignore given {@link Exception} types, still consider them as successful when these Exceptions occurred.
+     */
+    public RetryContext ignoreException(Class<Exception> ignoreException, Class<Exception>... moreIgnoreExceptions) {
+        assert moreIgnoreExceptions != null;
+        this.ignoreExceptionPredicate = (exp) -> Stream.concat(Stream.of(ignoreException), Stream.of(moreIgnoreExceptions)).noneMatch(exceptionClass -> exceptionClass.isAssignableFrom(exp.getClass()));
+        return this;
+    }
+
+    /**
+     * Predicate that returns true if the {@link Exception} occurred but still considered successful.
+     */
+    public RetryContext ignoreException(Predicate<Exception> ignoreExceptionPredicate) {
+        this.ignoreExceptionPredicate = ignoreExceptionPredicate;
+        return this;
+    }
 
     /**
      * Checks if the response is successful.
-     * When no custom Predicate is specified, it defaults to checking if the http status code is 200.
+     * When no custom Predicate is specified, it defaults to checking if the http status code is 2xx.
      *
      * @param successHttpResponsePredicate Predicate that returns true if the response is considered successful.
      */

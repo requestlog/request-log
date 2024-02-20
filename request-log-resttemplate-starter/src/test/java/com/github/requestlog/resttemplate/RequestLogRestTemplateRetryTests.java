@@ -7,6 +7,7 @@ import com.github.requestlog.core.context.retry.RetryResult;
 import com.github.requestlog.core.model.RequestLog;
 import com.github.requestlog.core.model.RequestRetryJob;
 import com.github.requestlog.core.repository.impl.InMemoryRequestLogRepository;
+import com.github.requestlog.core.support.HttpUtils;
 import com.github.requestlog.resttemplate.context.retry.RestTemplateRetryClient;
 import com.github.requestlog.test.model.RequestParamModel;
 import lombok.extern.slf4j.Slf4j;
@@ -120,7 +121,7 @@ public class RequestLogRestTemplateRetryTests {
 
         RetryResult retryResult = RetryContext.create(inMemoryRequestLogRepository.getLastRequestLog(), inMemoryRequestLogRepository.getLastRetryJob())
                 .rewritePath(retryRequestPath) // maybe same with original request
-                .successWhenResponse((requestContext) -> requestContext.getResponseCode() == 200)
+                .successWhenResponse((requestContext) -> HttpUtils.isSuccess(requestContext.getResponseCode()))
                 .with(RestTemplateRetryClient.class, restTemplate)
                 .execute();
 

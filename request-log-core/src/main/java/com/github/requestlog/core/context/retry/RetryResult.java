@@ -6,6 +6,7 @@ import com.github.requestlog.core.enums.RetryClientType;
 import com.github.requestlog.core.model.HttpRequestContext;
 import com.github.requestlog.core.model.RequestRetryJob;
 import com.github.requestlog.core.model.RequestRryLog;
+import com.github.requestlog.core.support.HttpUtils;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -73,8 +74,8 @@ public class RetryResult {
             return (succeedCache = retryContext.getSuccessHttpResponsePredicate().test(requestContext));
         }
 
-        // default response predicate only checks response code is 200
-        return (succeedCache = (requestContext.getResponseCode() != null && requestContext.getResponseCode() == 200));
+        // default response predicate only checks response code is 2xx
+        return (succeedCache = HttpUtils.isSuccess(requestContext.getResponseCode()));
     }
 
 

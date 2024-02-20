@@ -5,6 +5,7 @@ import com.github.requestlog.core.context.LogContext;
 import com.github.requestlog.core.context.RetryContext;
 import com.github.requestlog.core.context.retry.RetryResult;
 import com.github.requestlog.core.repository.impl.InMemoryRequestLogRepository;
+import com.github.requestlog.core.support.HttpUtils;
 import com.github.requestlog.okhttp.context.retry.OkHttpRetryClient;
 import com.github.requestlog.test.model.RequestParamModel;
 import lombok.extern.slf4j.Slf4j;
@@ -72,7 +73,7 @@ public class RequestLogOkHttpRetryTests {
 
         RetryResult retryResult = RetryContext.create(repository.getLastRequestLog(), repository.getLastRetryJob())
                 .rewritePath(rewriteRequestPath)
-                .successWhenResponse(requestContext -> requestContext.getResponseCode() == 200)
+                .successWhenResponse(requestContext -> HttpUtils.isSuccess(requestContext.getResponseCode()))
                 .with(OkHttpRetryClient.class, okHttpClient)
                 .execute();
 

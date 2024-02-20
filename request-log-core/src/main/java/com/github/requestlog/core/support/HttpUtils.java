@@ -30,4 +30,12 @@ public class HttpUtils {
         return null;
     }
 
+
+    /**
+     * Checks if the HTTP status code indicates success (2xx range).
+     */
+    public static boolean isSuccess(Integer httpCode) {
+        return httpCode != null && (httpCode >= 200 && httpCode < 300);
+    }
+
 }

@@ -7,13 +7,13 @@ import com.github.requestlog.core.context.RetryContext;
 import com.github.requestlog.core.context.retry.RetryResult;
 import com.github.requestlog.core.enums.HttpMethod;
 import com.github.requestlog.core.repository.impl.InMemoryRequestLogRepository;
+import com.github.requestlog.core.support.HttpUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpHead;
-import org.apache.http.client.methods.HttpTrace;
 import org.apache.http.client.methods.RequestBuilder;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -86,7 +86,7 @@ public class RequestLogApacheHttpClientRetryTests {
         RetryResult retryResult = RetryContext.create(repository.getLastRequestLog(), repository.getLastRetryJob())
                 .rewritePath(rewriteRequestPath)
                 .successWhenResponse((requestContext) ->
-                        requestContext.getResponseCode() == 200
+                        HttpUtils.isSuccess(requestContext.getResponseCode())
                                 && (requestContext.getHttpMethod() != HttpMethod.GET || StringUtils.startsWithIgnoreCase(requestContext.getResponseBody(), "{\"code\":200"))
                 )
                 .with(ApacheHttpClientRetryClient.class, httpClient)
