@@ -4,6 +4,7 @@ import com.github.requestlog.core.context.RetryContext;
 import com.github.requestlog.core.context.retry.RetryClient;
 import com.github.requestlog.core.context.retry.RetryResult;
 import com.github.requestlog.core.enums.RetryClientType;
+import com.github.requestlog.core.support.Preconditions;
 import com.github.requestlog.resttemplate.context.request.RestTemplateRequestContext;
 import com.github.requestlog.resttemplate.support.RestTemplateUtils;
 import org.springframework.http.HttpEntity;
@@ -33,22 +34,14 @@ public class RestTemplateRetryClient extends RetryClient<RestTemplate> {
     }
 
 
-    // TODO: 2024/2/12 check before execute request
-    private void checkBeforeExecute() {
-        if (httpClient == null) {
-            throw new IllegalArgumentException("A restTemplate is required to be specified as the client.");
-        }
-        // TODO: 2024/2/12 check retry context
-        super.validContext();
-    }
-
-
     /**
      * Perform request
      */
     protected RetryResult doExecute() {
 
-        checkBeforeExecute();
+        Preconditions.check(httpClient != null, "A restTemplate is null");
+        Preconditions.check(super.validContext(), "retryContext is not valid for retry");
+
 
         HttpHeaders headers = RestTemplateUtils.convert2HttpHeaders(retryContext.buildRequestHeaders());
         headers.add(RETRY_HEADER, generateRetryHeaderValue());

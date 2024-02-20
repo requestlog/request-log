@@ -9,6 +9,7 @@ import com.github.requestlog.core.context.retry.RetryClient;
 import com.github.requestlog.core.context.retry.RetryResult;
 import com.github.requestlog.core.enums.HttpMethod;
 import com.github.requestlog.core.enums.RetryClientType;
+import com.github.requestlog.core.support.Preconditions;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
@@ -39,7 +40,8 @@ public class ApacheHttpClientRetryClient extends RetryClient<HttpClient> {
     @Override
     protected RetryResult doExecute() {
 
-        // TODO: 2024/2/17 check before execute
+        Preconditions.check(httpClient != null, "httpClient is null");
+        Preconditions.check(super.validContext(), "retryContext is not valid for retry");
 
         HttpMethod method = retryContext.getRequestLog().getHttpMethod();
 

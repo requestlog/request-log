@@ -6,6 +6,7 @@ import com.github.requestlog.core.context.retry.RetryClient;
 import com.github.requestlog.core.context.retry.RetryResult;
 import com.github.requestlog.core.enums.HttpMethod;
 import com.github.requestlog.core.enums.RetryClientType;
+import com.github.requestlog.core.support.Preconditions;
 import com.github.requestlog.okhttp.context.request.OkHttpRequestContext;
 import com.github.requestlog.okhttp.support.OkHttpUtils;
 import okhttp3.OkHttpClient;
@@ -30,7 +31,8 @@ public class OkHttpRetryClient extends RetryClient<OkHttpClient> {
     @Override
     protected RetryResult doExecute() {
 
-        // TODO: 2024/2/19 check before execute
+        Preconditions.check(httpClient != null, "A okHttpClient is null");
+        Preconditions.check(super.validContext(), "retryContext is not valid for retry");
 
         HttpMethod method = retryContext.getRequestLog().getHttpMethod();
 

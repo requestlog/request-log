@@ -1,8 +1,10 @@
 package com.github.requestlog.core.context.retry;
 
 import com.github.requestlog.core.context.RetryContext;
+import com.github.requestlog.core.model.RequestLog;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -60,8 +62,8 @@ public abstract class RetryClient<C> {
 
     // TODO: 2024/2/14 checks if the retryContext executable
     protected boolean validContext() {
-        // TODO: 2024/2/11
-        return false;
+        RequestLog requestLog = retryContext.getRequestLog();
+        return requestLog != null && requestLog.getHttpMethod() != null && StringUtils.hasText(requestLog.getRequestUrl());
     }
 
 
