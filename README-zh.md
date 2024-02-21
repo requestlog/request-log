@@ -8,7 +8,7 @@
 <br/>
 **特点**：侵入小、集成简单。
 
-## 快速开始
+## 快速开始 <a name="quick_start"></a>
 
 以 `RestTemplate` 为例
 
@@ -62,7 +62,7 @@ public class MyRequestLogRepository implements IRequestLogRepository {
 String result = restTemplate.getForObject("url", String.class);
 
 // 包装后请求
-String wrappedResult = LogContext.log().execute(() -> {
+String result = LogContext.log().execute(() -> {
     return restTemplate.getForObject("url", String.class);
 });
 ```
