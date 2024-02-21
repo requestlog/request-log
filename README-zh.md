@@ -1,33 +1,32 @@
 # RequestLog
 
-[中文文档](README-zh.md)
+[English](README.md)
 
-## Introduction
+## 简介
 
-**RequestLog** is an HTTP request logging and retry compensation tool based on Spring Boot.
+**RequestLog** 是一个基于 spring-boot 的 Http 请求日志记录 与 重试补偿工具。
 <br/>
-**Features**: Low intrusion and easy integration.
+**特点**：侵入小、集成简单。
 
----
+## 快速开始
 
-## Quick Start
+以 `RestTemplate` 为例
 
-Taking **RestTemplate** as an example.
+#### Maven 依赖
 
-#### Maven Dependency
 ```xml
 <dependency>
     <groupId>io.github.requestlog</groupId>
     <artifactId>request-log-resttemplate-starter</artifactId>
-    <version>${latest_stable_version}</version>
+    <version>${最新稳定版本}</version>
 </dependency>
 ```
 
 ---
 
-### Enhance RestTemplate
+#### 增强 RestTemplate
 
-Enhance the RestTemplate client using annotations.
+使用注解增强 `RestTemplate` 客户端
 ```java
 @RequestLogEnhanced 
 @Bean
@@ -38,7 +37,7 @@ public RestTemplate restTemplate() {
 
 ---
 
-#### Define Repository for Persistence
+#### 定义 Repository 用以持久化
 
 ```java
 @Component
@@ -56,16 +55,16 @@ public class MyRequestLogRepository implements IRequestLogRepository {
 
 ---
 
-#### Wrap Request Code
+#### 包装请求代码
 
 ```java
-// Original request code
+// 原始请求
 String result = restTemplate.getForObject("url", String.class);
 
-// Wrapped request code
+// 包装后请求
 String wrappedResult = LogContext.log().execute(() -> {
     return restTemplate.getForObject("url", String.class);
 });
 ```
 
-For the wrapped request, when an exception occurs or the response status code is not `2xx`, the corresponding save method of the custom `IRequestLogRepository` will be invoked.
+包装后的请求，在出现异常 或 响应状态码非 `2xx` 时，自定义 `IRequestLogRepository` 的对应 save 方法会被调用。
