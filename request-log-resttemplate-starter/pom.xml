@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.github.requestlog</groupId>
+        <groupId>io.github.requestlog</groupId>
         <artifactId>request-log</artifactId>
         <version>${revision}</version>
     </parent>
@@ -14,7 +14,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.github.requestlog</groupId>
+            <groupId>io.github.requestlog</groupId>
             <artifactId>request-log-core</artifactId>
         </dependency>
         <dependency>
@@ -28,7 +28,7 @@
 
         <!-- test -->
         <dependency>
-            <groupId>com.github.requestlog</groupId>
+            <groupId>io.github.requestlog</groupId>
             <artifactId>request-log-test</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
