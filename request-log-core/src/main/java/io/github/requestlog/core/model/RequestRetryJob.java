@@ -11,21 +11,34 @@ public class RequestRetryJob {
 
     private RequestLog requestLog;
 
-    // Retry interval calculation strategy
+    /**
+     * Retry interval calculation strategy.
+     */
     private RetryWaitStrategy retryWaitStrategy;
 
-    // TODO: 2024/2/14 change to millis?
-    // Retry interval in seconds
+    /**
+     * Retry interval in seconds.
+     */
     private Integer retryInterval;
 
-    // Last execution time
+    /**
+     * Last execution time.
+     */
     private Long lastExecuteTimeMillis;
 
-    // Next scheduled execution time
+    /**
+     * Next scheduled execution time.
+     */
     private Long nextExecuteTimeMillis;
 
-    // TODO: 2024/2/14 contains first execute time?
-    // Number of retries already performed (contains first execute count)
+    /**
+     * Number of executions already performed.
+     *
+     * Contains first execution count when RequestLog is created.
+     * Starts from 1.
+     */
     private Integer executeCount;
+
+    // TODO: 2024/2/21 expectMaxRetryCount ?
 
 }

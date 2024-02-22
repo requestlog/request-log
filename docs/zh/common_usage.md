@@ -2,7 +2,9 @@
 
 建议先看完 [快速开始](../../README-zh.md#quick_start)
 
-## 日志
+<br/>
+
+## 日志 <a name="log"></a>
 
 #### 简单示例
 ```java
@@ -153,7 +155,7 @@ Predicates.registerSuccessResponsePredicate(requestContext -> requestContext.get
 
 <br/>
 
-## 持久化
+## 持久化 <a name="repository"></a>
 
 
 #### 内置持久化

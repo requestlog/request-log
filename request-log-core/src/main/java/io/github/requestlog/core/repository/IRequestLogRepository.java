@@ -8,14 +8,29 @@ import io.github.requestlog.core.model.RequestRryLog;
 
 public interface IRequestLogRepository {
 
+
+    /**
+     * Save {@link RequestLog}
+     */
     void saveRequestLog(RequestLog requestLog);
 
+    /**
+     * Save {@link RequestRetryJob}
+     */
     void saveRequestLogAndRetryJob(RequestLog requestLog, RequestRetryJob requestRetryJob);
 
+
+    /**
+     * Save {@link RequestRetryJob}
+     *
+     * Typically saved manually after {@link #generateNewRetryJob}.
+     */
     default void saveRequestRetryJob(RequestRetryJob requestRetryJob) {
     }
 
-
+    /**
+     * Save {@link RequestRryLog}
+     */
     default void saveRequestRetryLog(RequestRryLog requestRryLog) {
     }
 
@@ -37,9 +52,8 @@ public interface IRequestLogRepository {
         retryJob.setRetryWaitStrategy(retryWaitStrategy);
         retryJob.setRetryInterval(retryInterval);
         retryJob.setLastExecuteTimeMillis(0L);
-        retryJob.setExecuteCount(1); // TODO: 2024/2/14 new generated starts from 0 or 1
-        // TODO: 2024/2/14 retry 60s later or now
-        retryJob.setNextExecuteTimeMillis(retryWaitStrategy.nextExecuteTime(System.currentTimeMillis(), retryJob.getExecuteCount(), retryInterval));
+        retryJob.setExecuteCount(1); // 1 is for RequestLog first execution count.
+        retryJob.setNextExecuteTimeMillis(System.currentTimeMillis()); // instant retry.
 
         return retryJob;
     }

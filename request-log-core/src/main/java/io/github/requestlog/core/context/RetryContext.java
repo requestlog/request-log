@@ -198,7 +198,8 @@ public class RetryContext {
     /**
      * Ignore given {@link Exception} types, still consider them as successful when these Exceptions occurred.
      */
-    public RetryContext ignoreException(Class<Exception> ignoreException, Class<Exception>... moreIgnoreExceptions) {
+    @SafeVarargs
+    public final RetryContext ignoreException(Class<? extends Exception> ignoreException, Class<? extends Exception>... moreIgnoreExceptions) {
         assert moreIgnoreExceptions != null;
         this.ignoreExceptionPredicate = (exp) -> Stream.concat(Stream.of(ignoreException), Stream.of(moreIgnoreExceptions)).noneMatch(exceptionClass -> exceptionClass.isAssignableFrom(exp.getClass()));
         return this;
