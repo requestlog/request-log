@@ -21,10 +21,20 @@ public class ApacheHttpClientRequestLogEnhancer {
      * Enhances the provided {@link HttpClient} with RequestLog capabilities.
      */
     public HttpClient enhance(HttpClient httpClient) {
-        if (httpClient instanceof HttpClientRequestLogDecorator) {
+        if (isEnhanced(httpClient)) {
             return httpClient;
         }
         return new HttpClientRequestLogDecorator(requestLogHandler, httpClient);
+    }
+
+
+    /**
+     * Checks if the {@link HttpClient} is already enhanced.
+     *
+     * Does not support decorators with multiple layers.
+     */
+    public boolean isEnhanced(HttpClient httpClient) {
+        return httpClient instanceof HttpClientRequestLogDecorator;
     }
 
 }

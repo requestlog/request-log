@@ -49,7 +49,5 @@ public class RequestLogApacheHttpClientAutoConfiguration {
 
     }
 
-    // TODO: 2024/2/16 scan all bean and enhance
-
 
 }
