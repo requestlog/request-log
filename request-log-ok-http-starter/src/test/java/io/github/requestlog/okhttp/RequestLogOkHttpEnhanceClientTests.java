@@ -1,11 +1,10 @@
-package io.github.requestlog.apachehttpclient;
+package io.github.requestlog.okhttp;
 
 
-import io.github.requestlog.apachehttpclient.support.ApacheHttpClientRequestLogEnhancer;
 import io.github.requestlog.core.annotation.RequestLogEnhanced;
+import io.github.requestlog.okhttp.support.OkHttpRequestLogEnhancer;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.http.client.HttpClient;
-import org.apache.http.impl.client.HttpClients;
+import okhttp3.OkHttpClient;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
@@ -13,57 +12,58 @@ import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.Resource;
 
-
 /**
  * Tests for enhance by properties.
  */
-public class RequestLogApacheHttpClientEnhanceClientTests {
-
+public class RequestLogOkHttpEnhanceClientTests {
 
     @SpringBootTest(classes = TestApplication.class,
             properties = {
                     "debug=true",
                     // properties for enhance.
-                    "request-log.apache-http-client.enhance-all=true"
+                    "request-log.ok-http.enhance-all=true"
             }
     )
     @Slf4j
-    public static class EnhancedAllTests {
+    public static class EnhanceAllTests {
 
         @Resource
-        private HttpClient httpClient;
+        private OkHttpClient okHttpClient;
         @Resource
-        private HttpClient notEnhancedByAnnotationClient;
+        private OkHttpClient notEnhancedByAnnotationClient;
         @Resource
-        private ApacheHttpClientRequestLogEnhancer enhancer;
+        private OkHttpRequestLogEnhancer enhancer;
 
         @Test
-        public void testEnhancedAll() {
-            assert enhancer.isEnhanced(httpClient);
+        public void testEnhanceAll() {
+            assert enhancer.isEnhanced(okHttpClient);
             assert enhancer.isEnhanced(notEnhancedByAnnotationClient);
         }
-    }
 
+
+    }
 
     @SpringBootTest(classes = TestApplication.class,
             properties = {
                     "debug=true"
             }
     )
-    public static class NotEnhancedAllTests {
+    @Slf4j
+    public static class NotEnhanceAllTests {
 
         @Resource
-        private HttpClient httpClient;
+        private OkHttpClient okHttpClient;
         @Resource
-        private HttpClient notEnhancedByAnnotationClient;
+        private OkHttpClient notEnhancedByAnnotationClient;
         @Resource
-        private ApacheHttpClientRequestLogEnhancer enhancer;
+        private OkHttpRequestLogEnhancer enhancer;
 
         @Test
-        public void testNotEnhancedAll() {
-            assert enhancer.isEnhanced(httpClient);
+        public void testNotEnhanceAll() {
+            assert enhancer.isEnhanced(okHttpClient);
             assert !enhancer.isEnhanced(notEnhancedByAnnotationClient);
         }
+
     }
 
 
@@ -71,12 +71,11 @@ public class RequestLogApacheHttpClientEnhanceClientTests {
      * Not enhanced by {@link RequestLogEnhanced} configuration.
      */
     @Configuration
-    protected static class NotEnhancedHttpClientConfiguration {
+    protected static class NotEnhancedOkHttpClientConfiguration {
         @Bean
-        public HttpClient notEnhancedByAnnotationClient() {
-            return HttpClients.createDefault();
+        public OkHttpClient notEnhancedByAnnotationClient() {
+            return new OkHttpClient.Builder().build();
         }
     }
-
 
 }

@@ -26,13 +26,22 @@ public class OkHttpRequestLogEnhancer {
      * If the Interceptor does not exist, creates a enhanced object.
      */
     public OkHttpClient enhance(OkHttpClient client) {
-        // Check if the RequestLogOkHttpInterceptor already exists
-        for (Interceptor clientInterceptor : client.interceptors()) {
-            if (clientInterceptor.getClass().equals(RequestLogOkHttpInterceptor.class)) {
-                return client;
-            }
+        if (isEnhanced(client)) {
+            return client;
         }
         return client.newBuilder().addInterceptor(interceptor).build();
+    }
+
+    /**
+     * Checks if the {@link OkHttpClient} is already enhanced.
+     */
+    public boolean isEnhanced(OkHttpClient client) {
+        for (Interceptor clientInterceptor : client.interceptors()) {
+            if (clientInterceptor.getClass().equals(RequestLogOkHttpInterceptor.class)) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }

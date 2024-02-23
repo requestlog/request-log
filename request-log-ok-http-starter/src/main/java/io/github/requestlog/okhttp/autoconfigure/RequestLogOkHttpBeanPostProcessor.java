@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -22,17 +23,22 @@ public class RequestLogOkHttpBeanPostProcessor implements BeanPostProcessor, App
 
     private ApplicationContext applicationContext;
 
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.applicationContext = applicationContext;
-    }
+    @Value("${request-log.ok-http.enhance-all:#{null}}")
+    private String enhanceAll;
 
     @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
-        if (bean instanceof OkHttpClient && applicationContext.findAnnotationOnBean(beanName, RequestLogEnhanced.class) != null) {
-            return enhancer.enhance((OkHttpClient) bean);
+        if (bean instanceof OkHttpClient) {
+            if ("true".equals(enhanceAll) || applicationContext.findAnnotationOnBean(beanName, RequestLogEnhanced.class) != null) {
+                return enhancer.enhance((OkHttpClient) bean);
+            }
         }
         return bean;
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
     }
 
 }
