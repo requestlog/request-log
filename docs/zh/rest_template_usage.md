@@ -29,9 +29,10 @@ public RestTemplate restTemplate() {
 #### 2.通过 `Enhancer` 增强
 ```java
 @Autowired
-private ApacheHttpClientRequestLogEnhancer enhancer;
+private RestTemplateRequestLogEnhancer enhancer;
 
-enhancer.enhance(restTemplate); // 返回值为入参对象，不需要刻意使用返回的引用
+// 返回值为入参对象，不需要刻意使用返回的引用
+enhancer.enhance(restTemplate);
 ```
 
 #### 3.通过配置，增强所有 `RestTemplate` Bean
@@ -57,15 +58,14 @@ String result = LogContext.log().execute(() -> {
 
 ---
 
-### 重试
+### 重试 <a name="retry"></a>
 
 ```java
+import io.github.requestlog.resttemplate.context.retry.RestTemplateRetryClient;
+
 RetryResult retryResult = RetryContext.create(RequestLogObj, @Nullable RequestRetryJobObj)
-        // 自定义判断 response 是否成功
         .successWhenResponse((requestContext) -> requestContext.getResponseCode() == 200))
         // 指定使用 RestTemplate 作为 Retry 客户端
         .with(RestTemplateRetryClient.class, restTemplate)
         .execute();
 ```
-
-详细的重试配置 [重试](common_usage.md#retry)

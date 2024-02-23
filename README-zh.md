@@ -68,3 +68,13 @@ String result = LogContext.log().execute(() -> {
 ```
 
 包装后的请求，在出现异常 或 响应状态码非 `2xx` 时，自定义 `IRequestLogRepository` 的对应 save 方法会被调用。
+
+---
+
+
+## 详细文档
+
+- [RestTemplate 使用方式](/docs/zh/rest_template_usage.md)
+- [ApacheHttpClient 使用方式](/docs/zh/apache_http_client_usage.md)
+- [OKHttp 使用方式](/docs/zh/ok_http_usage.md)
+- [Feign 使用方式](/docs/zh/feign_usage.md)

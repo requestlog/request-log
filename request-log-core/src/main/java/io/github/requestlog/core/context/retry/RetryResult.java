@@ -79,29 +79,34 @@ public class RetryResult {
     }
 
 
-    private RequestRetryJob updatedRetryJobCache;
+    /**
+     * Indicates whether {@link #updateRetryJob} has been invoked.
+     */
+    private Boolean updateRetryJobInvoked;
 
     /**
      * Updates the {@link RequestRetryJob} passed when creating the {@link RetryContext}.
+     * Modifies the original object.
      */
-    // TODO: 2024/2/14 retry job for update?
     public RequestRetryJob updateRetryJob() {
-
-        if (updatedRetryJobCache != null) {
-            return updatedRetryJobCache;
-        }
 
         if (retryContext.getRequestRetryJob() == null) {
             log.warn("When initializing Retry Context, no RequestRetryJob object was provided. If you want to generate a new job, new RequestRetryJob can be created using IRequestLogRepository#generateNewRetryJob.");
             return null;
         }
 
-        RequestRetryJob retryJob = retryContext.getRequestRetryJob();
-        retryJob.setLastExecuteTimeMillis(executeTimeMillis);
-        retryJob.setExecuteCount(retryJob.getExecuteCount() + 1);
-        retryJob.setNextExecuteTimeMillis(retryJob.getRetryWaitStrategy().nextExecuteTime(executeTimeMillis, retryJob.getExecuteCount(), retryJob.getRetryInterval()));
+        if (Boolean.TRUE.equals(updateRetryJobInvoked)) {
+            return retryContext.getRequestRetryJob();
+        }
 
-        return (updatedRetryJobCache = retryJob);
+        RequestRetryJob retryJob = retryContext.getRequestRetryJob();
+        retryJob.setLastExecuteTimeMillis(executeTimeMillis); // before http request time.
+        retryJob.setExecuteCount(retryJob.getExecuteCount() + 1);
+        //  The next execution time is calculated based on the current time to prevent the time interval from becoming ineffective due to prolonged request times.
+        retryJob.setNextExecuteTimeMillis(retryJob.getRetryWaitStrategy().nextExecuteTime(System.currentTimeMillis(), retryJob.getExecuteCount(), retryJob.getRetryInterval()));
+        updateRetryJobInvoked = true;
+
+        return retryJob;
     }
 
 

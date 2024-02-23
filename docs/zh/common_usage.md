@@ -71,7 +71,7 @@ RequestLog
  * 包含
  * - 上一次重试时间
  * - 下一次重试时间
- * - 已执行次数
+ * - 已执行次数（包含记录日志时 首次执行次数）
  */
 RequestRetryJob
 
@@ -114,7 +114,7 @@ LogContext.log()
 
 #### 记录日志条件（全局的）
 
-判断逻辑重复，不想要每次都指定
+条件大体相同，判断逻辑重复，不想要每次都指定
 
 ```java
 import io.github.requestlog.core.support.Predicates;
@@ -160,7 +160,7 @@ Predicates.registerSuccessResponsePredicate(requestContext -> requestContext.get
 
 #### 内置持久化
 
-- `Slf4jRequestLogRepository`：未自定义时，默认加载的 `IRequestLogRepository` ，debug 模式打印。
+- `Slf4jRequestLogRepository`：未自定义时，默认加载。
 - `InMemoryRequestLogRepository`：基于内存，可用于单元测试。
 
 ---
@@ -218,7 +218,9 @@ LogContext.retry()
 
 #### 手动生成 重试任务
 
-忘记了使用 `LogContext.retry()`，只生成了 `RequestLog` 没有 `RequestRetryJob`
+忘记了使用 `LogContext.retry()`，只生成了 `RequestLog`
+
+根据 `RequestLog` 生成一个 `RequestRetryJob`
 
 
 ```java
@@ -235,18 +237,72 @@ IRequestLogRepository.generateNewRetryJob(RequestLog, RetryWaitStrategy, retryIn
 IRequestLogRepository.saveRequestRetryJob(generatedRetryJob);
 ```
 
-#### 重试请求
+---
+
+#### 重试请求示例
 
 ```java
 RetryResult retryResult = RetryContext.create(RequestLogObj, @Nullable RequestRetryJobObj)
         .rewritePath(retryRequestPath) // 多个 rewrite 方法，下边详细解释
         .ignoreException(NumberFormatException.class, IOException.class)
         .successWhenResponse((requestContext) -> HttpUtils.isSuccess(requestContext.getResponseCode()))
-        .with(RestTemplateRetryClient.class, restTemplate)
+        .with(RestTemplateRetryClient.class, restTemplate) // 可以替换成其他的 RetryClient
         .execute();
 ```
 
+---
 
-TODO 
-- [ ] retryResult
-- [ ] retry 全局 predicate
+#### 重试请求 覆盖方法
+
+- `rewriteUrl`：重写整个 `URL`，会忽略其他 重写部分 `URL` 的方法
+- `rewriteScheme`：重写协议
+- `rewriteHost`：重写主机
+- `rewritePort`：重写端口
+- `rewritePath`：重写路径
+- `rewriteQuery`：重写查询参数
+- `rewriteFragment`：重写片段
+- `rewriteHeader`：重写请求 header，有则覆盖，没有则添加
+- `appendHeader`：添加请求 header
+- `rewriteBody`：重写请求 body
+
+---
+
+#### 重试结果 判断条件
+
+- `ignoreException`：出现下列异常时，依然算成功。默认出现异常就算失败。
+- `successWhenResponse`：根据请求响应上下文自定判断。默认状态码 `2xx` 算成功。
+
+---
+
+#### 重试后的 操作建议
+
+重试 `execute` 之后，会得到一个 `RetryResult`
+
+- `succeed()`：判断当前重试是否成功，可以将 `RequestRetryJob` 进行删除或者归档
+- `updateRetryJob()`：修改重试任务在重试失败后，修改重试任务用
+- `generateRetryLog()`：生成一个重试日志。
+
+```java
+
+if (retryResult.succeed) {
+    // 执行成功，删除 RequestRetryJob 或归档
+        
+} else {
+    // 执行失败    
+    
+    /**
+     * 修改原始构建对象，会影响如下字段
+     * - `lastExecuteTimeMillis`：上一次执行时间
+     * - `nextExecuteTimeMillis`：下一次执行时间
+     * - `executeCount`：总执行次数（包含记录日志时的次数）
+     */
+    retryResult.updateRetryJob();
+        
+    // 如果需要获取 获取构建重试时传入的 `RequestRetryJob` 对象
+    RequestRetryJob requestRetryJob = retryResult.getRetryContext().getRequestRetryJob();
+}
+
+// 无论重试结果如何，都可以生成一个重试日志，自行选择如何处理
+RequestRryLog retryLog = retryResult.generateRetryLog();
+
+```
