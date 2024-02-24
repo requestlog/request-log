@@ -9,6 +9,7 @@ import io.github.requestlog.core.model.RequestRryLog;
 import io.github.requestlog.core.support.HttpUtils;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 
 import java.util.Optional;
 
@@ -17,7 +18,6 @@ import java.util.Optional;
  * Retry result
  */
 @Slf4j
-@Getter
 public class RetryResult {
 
     public RetryResult(RetryClientType retryClientType, long executeTimeMillis, RetryContext retryContext, HttpRequestContext requestContext) {
@@ -30,8 +30,18 @@ public class RetryResult {
         this.retryContext = retryContext;
         this.requestContext = requestContext;
         this.exception = exception;
+        this.requestRetryJobCopy = Optional.ofNullable(retryContext.getRequestRetryJob()).map(e -> {
+            RequestRetryJob copy = new RequestRetryJob();
+            BeanUtils.copyProperties(e, copy);
+            return copy;
+        }).orElse(null);
     }
 
+    /**
+     * Because the original object `retryContext.requestRetryJob` may be modified,
+     * create a copy during the initialization of RetryResult.
+     */
+    private final RequestRetryJob requestRetryJobCopy;
 
     @Getter
     private final RetryClientType retryClientType;
@@ -78,6 +88,20 @@ public class RetryResult {
         return (succeedCache = HttpUtils.isSuccess(requestContext.getResponseCode()));
     }
 
+    /**
+     * Determines whether the retry process should continue.
+     * Conditions for continuing include:
+     * - A {@link RequestRetryJob} was specified when constructing {@link RetryContext}.
+     * - The current execution result, as indicated by {@link #succeed()}, is false.
+     * - The maximum execution count specified in the {@link RequestRetryJob} has not been reached.
+     */
+    public boolean shouldContinue() {
+        if (requestRetryJobCopy == null || succeed()
+                || requestRetryJobCopy.getMaxExecuteCount() == null || requestRetryJobCopy.getExecuteCount() == null) {
+            return false;
+        }
+        return requestRetryJobCopy.getMaxExecuteCount() > requestRetryJobCopy.getExecuteCount() + 1;
+    }
 
     /**
      * Indicates whether {@link #updateRetryJob} has been invoked.

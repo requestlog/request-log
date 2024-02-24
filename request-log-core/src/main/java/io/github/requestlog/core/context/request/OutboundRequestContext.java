@@ -87,6 +87,7 @@ public abstract class OutboundRequestContext extends BaseRequestContext {
         retryJob.setLastExecuteTimeMillis(logContext.getBeforeExecuteTimeMillis());
         retryJob.setExecuteCount(1);
         retryJob.setNextExecuteTimeMillis(retryJob.getRetryWaitStrategy().nextExecuteTime(1, retryJob.getRetryInterval()));
+        retryJob.setMaxExecuteCount(logContext.getMaxExecuteCount());
 
         return (super.requestRetryJobCache = retryJob);
     }

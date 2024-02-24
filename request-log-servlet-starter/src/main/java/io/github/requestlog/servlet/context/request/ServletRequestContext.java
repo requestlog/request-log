@@ -63,8 +63,9 @@ public class ServletRequestContext extends InboundRequestContext {
         retryJob.setRetryWaitStrategy(reqLog.retryWaitStrategy());
         retryJob.setRetryInterval(reqLog.retryInterval());
         retryJob.setLastExecuteTimeMillis(beforeExecuteTimeMillis);
-        retryJob.setExecuteCount(1);
         retryJob.setNextExecuteTimeMillis(reqLog.retryWaitStrategy().nextExecuteTime(1, reqLog.retryInterval()));
+        retryJob.setExecuteCount(1);
+        retryJob.setMaxExecuteCount(reqLog.maxExecuteCount());
 
         return (requestRetryJobCache = retryJob);
     }

@@ -63,6 +63,9 @@ public final class LogContext {
     @Getter
     private RetryWaitStrategy retryWaitStrategy = RetryWaitStrategy.FIXED;
 
+    @Getter
+    private Integer maxExecuteCount = 3;
+
     /**
      * Custom exception predicate for current request.
      * overrides global predicates.
@@ -107,6 +110,17 @@ public final class LogContext {
     public LogContext retryWaitStrategy(RetryWaitStrategy retryWaitStrategy) {
         assert retryWaitStrategy != null;
         this.retryWaitStrategy = retryWaitStrategy;
+        return this;
+    }
+
+    /**
+     * Expected max execute count, contains first count when logging.
+     * Primarily a suggestion for subsequent actions.
+     * Only works when {@link #retry} is true.
+     */
+    public LogContext maxExecuteCount(int maxExecuteCount) {
+        assert maxExecuteCount > 0;
+        this.maxExecuteCount = maxExecuteCount;
         return this;
     }
 

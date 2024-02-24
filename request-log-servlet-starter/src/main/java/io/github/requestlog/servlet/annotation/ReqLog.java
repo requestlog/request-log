@@ -38,4 +38,11 @@ public @interface ReqLog {
      */
     int retryInterval() default 60;
 
+    /**
+     * Expected max execute count, contains first count when logging.
+     * Primarily a suggestion for subsequent actions.
+     * Only works when {@link #retry} is true.
+     */
+    int maxExecuteCount() default 3;
+
 }

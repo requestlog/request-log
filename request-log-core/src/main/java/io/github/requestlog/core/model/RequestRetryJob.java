@@ -39,6 +39,13 @@ public class RequestRetryJob {
      */
     private Integer executeCount;
 
-    // TODO: 2024/2/21 expectMaxRetryCount ?
+    /**
+     * Expected maximum execution count.
+     * Suggestion rather than a strict requirement.
+     *
+     * Contains first execution count when RequestLog is created.
+     * Starts from 1.
+     */
+    private Integer maxExecuteCount;
 
 }
