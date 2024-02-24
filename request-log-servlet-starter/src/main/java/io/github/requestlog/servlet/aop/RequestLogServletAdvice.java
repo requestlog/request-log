@@ -35,11 +35,13 @@ public class RequestLogServletAdvice {
             return joinPoint.proceed();
         }
 
+        final long beforeExecuteTimeMillis = System.currentTimeMillis();
+
         try {
             THREAD_LOCAL.set(EMPTY_OBJECT);
             return joinPoint.proceed();
         } catch (Exception e) {
-            requestLogHandler.handle(new ServletRequestContext(reqLog, RequestContextHolder.getRequestAttributes(), e));
+            requestLogHandler.handle(new ServletRequestContext(reqLog, RequestContextHolder.getRequestAttributes(), e, beforeExecuteTimeMillis));
             throw e;
         } finally {
             THREAD_LOCAL.remove();

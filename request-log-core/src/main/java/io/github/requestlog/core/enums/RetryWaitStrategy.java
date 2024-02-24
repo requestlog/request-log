@@ -62,4 +62,11 @@ public enum RetryWaitStrategy {
      */
     public abstract long nextExecuteTime(long lastExecuteTimeMillis, int currentExecuteCount, int interval);
 
+    /**
+     * @see RetryWaitStrategy#nextExecuteTime(long, int, int)
+     */
+    public long nextExecuteTime(int currentExecuteCount, int interval) {
+        return this.nextExecuteTime(System.currentTimeMillis(), currentExecuteCount, interval);
+    }
+
 }

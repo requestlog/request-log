@@ -103,7 +103,7 @@ public class RetryResult {
         retryJob.setLastExecuteTimeMillis(executeTimeMillis); // before http request time.
         retryJob.setExecuteCount(retryJob.getExecuteCount() + 1);
         //  The next execution time is calculated based on the current time to prevent the time interval from becoming ineffective due to prolonged request times.
-        retryJob.setNextExecuteTimeMillis(retryJob.getRetryWaitStrategy().nextExecuteTime(System.currentTimeMillis(), retryJob.getExecuteCount(), retryJob.getRetryInterval()));
+        retryJob.setNextExecuteTimeMillis(retryJob.getRetryWaitStrategy().nextExecuteTime(retryJob.getExecuteCount(), retryJob.getRetryInterval()));
         updateRetryJobInvoked = true;
 
         return retryJob;

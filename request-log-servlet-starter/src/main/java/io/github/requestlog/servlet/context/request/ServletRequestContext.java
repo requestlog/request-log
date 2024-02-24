@@ -3,6 +3,7 @@ package io.github.requestlog.servlet.context.request;
 import io.github.requestlog.core.context.request.InboundRequestContext;
 import io.github.requestlog.core.enums.HttpMethod;
 import io.github.requestlog.core.enums.RequestContextType;
+import io.github.requestlog.core.model.RequestRetryJob;
 import io.github.requestlog.servlet.annotation.ReqLog;
 import io.github.requestlog.servlet.support.ServletUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -29,9 +30,10 @@ public class ServletRequestContext extends InboundRequestContext {
     private final ReqLog reqLog;
     private final HttpServletRequest request;
     private HttpServletResponse response;
+    private final long beforeExecuteTimeMillis;
 
 
-    public ServletRequestContext(ReqLog reqLog, RequestAttributes requestAttributes) {
+    public ServletRequestContext(ReqLog reqLog, RequestAttributes requestAttributes, long beforeExecuteTimeMillis) {
         this.reqLog = reqLog;
         if (requestAttributes instanceof ServletRequestAttributes) {
             this.request = ((ServletRequestAttributes) requestAttributes).getRequest();
@@ -42,11 +44,29 @@ public class ServletRequestContext extends InboundRequestContext {
             this.request = null;
             this.response = null;
         }
+        this.beforeExecuteTimeMillis = beforeExecuteTimeMillis;
     }
 
-    public ServletRequestContext(ReqLog reqLog, RequestAttributes requestAttributes, Exception exception) {
-        this(reqLog, requestAttributes);
+    public ServletRequestContext(ReqLog reqLog, RequestAttributes requestAttributes, Exception exception, long beforeExecuteTimeMillis) {
+        this(reqLog, requestAttributes, beforeExecuteTimeMillis);
         super.exception = exception;
+    }
+
+    @Override
+    public RequestRetryJob buildRequestRetryJob() {
+        if (requestRetryJobCache != null) {
+            return requestRetryJobCache;
+        }
+
+        RequestRetryJob retryJob = new RequestRetryJob();
+        retryJob.setRequestLog(buildRequestLog());
+        retryJob.setRetryWaitStrategy(reqLog.retryWaitStrategy());
+        retryJob.setRetryInterval(reqLog.retryInterval());
+        retryJob.setLastExecuteTimeMillis(beforeExecuteTimeMillis);
+        retryJob.setExecuteCount(1);
+        retryJob.setNextExecuteTimeMillis(reqLog.retryWaitStrategy().nextExecuteTime(1, reqLog.retryInterval()));
+
+        return (requestRetryJobCache = retryJob);
     }
 
 

@@ -1,5 +1,7 @@
 package io.github.requestlog.servlet.annotation;
 
+import io.github.requestlog.core.enums.RetryWaitStrategy;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -23,5 +25,17 @@ public @interface ReqLog {
      * Also generate retry job.
      */
     boolean retry() default false;
+
+    /**
+     * Retry interval calculation strategy.
+     * Only works when {@link #retry} is true.
+     */
+    RetryWaitStrategy retryWaitStrategy() default RetryWaitStrategy.FIXED;
+
+    /**
+     * Retry interval in seconds.
+     * Only works when {@link #retry} is true.
+     */
+    int retryInterval() default 60;
 
 }

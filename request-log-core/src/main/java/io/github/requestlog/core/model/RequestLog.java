@@ -19,6 +19,9 @@ public class RequestLog {
 
     private RequestLogErrorType logErrorType;
 
+    // custom attributes
+    private Map<String, Object> attributeMap;
+
     // Exception
     private Exception exception;
 

@@ -5,6 +5,7 @@ import io.github.requestlog.core.context.LogContext;
 import io.github.requestlog.core.enums.RequestLogErrorType;
 import io.github.requestlog.core.enums.RetryWaitStrategy;
 import io.github.requestlog.core.model.HttpRequestContext;
+import io.github.requestlog.core.model.RequestLog;
 import io.github.requestlog.core.model.RequestRetryJob;
 import io.github.requestlog.core.support.CollectionUtils;
 import io.github.requestlog.core.support.Predicates;
@@ -66,6 +67,14 @@ public abstract class OutboundRequestContext extends BaseRequestContext {
 
 
     @Override
+    public RequestLog buildRequestLog() {
+        RequestLog requestLog = super.buildRequestLog();
+        requestLog.setAttributeMap(logContext.getAttributeMap());
+        return requestLog;
+    }
+
+
+    @Override
     public RequestRetryJob buildRequestRetryJob() {
         if (super.requestRetryJobCache != null) {
             return super.requestRetryJobCache;
@@ -77,7 +86,7 @@ public abstract class OutboundRequestContext extends BaseRequestContext {
         retryJob.setRetryInterval(Optional.ofNullable(logContext.getRetryInterval()).orElse(60));
         retryJob.setLastExecuteTimeMillis(logContext.getBeforeExecuteTimeMillis());
         retryJob.setExecuteCount(1);
-        retryJob.setNextExecuteTimeMillis(retryJob.getRetryWaitStrategy().nextExecuteTime(retryJob.getLastExecuteTimeMillis(), 1, retryJob.getRetryInterval()));
+        retryJob.setNextExecuteTimeMillis(retryJob.getRetryWaitStrategy().nextExecuteTime(1, retryJob.getRetryInterval()));
 
         return (super.requestRetryJobCache = retryJob);
     }

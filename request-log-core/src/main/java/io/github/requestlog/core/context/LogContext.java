@@ -7,6 +7,8 @@ import io.github.requestlog.core.support.function.RunnableExp;
 import io.github.requestlog.core.support.function.SupplierExp;
 import lombok.Getter;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -43,10 +45,11 @@ public final class LogContext {
         return context;
     }
 
-    // TODO: 2024/1/31 some reserved fields like bizId、tenantId
-
-    // TODO: 2024/2/11 bizId  tenantId as  FunctionalInterface
-
+    /**
+     * Custom variables map.
+     */
+    @Getter
+    private Map<String, Object> attributeMap;
 
     /**
      * also generate retry job
@@ -76,6 +79,16 @@ public final class LogContext {
     @Getter
     private Predicate<HttpRequestContext> successHttpResponsePredicate;
 
+    /**
+     * Custom key value.
+     */
+    public LogContext addAttribute(String key, Object value) {
+        if (this.attributeMap == null) {
+            this.attributeMap = new HashMap<>();
+        }
+        this.attributeMap.put(key, value);
+        return this;
+    }
 
     /**
      * Retry interval in seconds.

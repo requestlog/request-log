@@ -63,19 +63,7 @@ public abstract class BaseRequestContext implements HttpRequestContext {
     /**
      * Build {@link RequestRetryJob}
      */
-    public RequestRetryJob buildRequestRetryJob() {
-        if (requestRetryJobCache != null) {
-            return requestRetryJobCache;
-        }
-
-        RequestRetryJob requestRetryJob = new RequestRetryJob();
-        requestRetryJob.setRequestLog(buildRequestLog());
-
-        // TODO: 2024/1/31 retry job fields
-
-
-        return (requestRetryJobCache = requestRetryJob);
-    }
+    public abstract RequestRetryJob buildRequestRetryJob();
 
 
     /**
