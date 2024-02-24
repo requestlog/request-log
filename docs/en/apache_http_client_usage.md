@@ -1,23 +1,23 @@
-# RequestLog ApacheHttpClient 详细配置
+# RequestLog ApacheHttpClient Configuration
 
 
-[通用配置(日志、持久化、重试等)](common_usage.md)
+[Common Configuration (Logging, Persistence, Retry, etc.)](common_usage.md)
 
 
-### Maven 依赖
+### Maven Dependency
 ```xml
 <dependency>
     <groupId>io.github.requestlog</groupId>
     <artifactId>request-log-apache-http-client-starter</artifactId>
-    <version>${最新稳定版本}</version>
+    <version>${last stable version}</version>
 </dependency>
 ```
 
 ---
 
-### 增强 HttpClient
+### Enhance HttpClient
 
-#### 1.通过注解增强
+#### 1.Enhance through Annotation
 ```java
 @RequestLogEnhanced
 @Bean
@@ -26,16 +26,16 @@ public HttpClient httpClient() {
 }
 ```
 
-#### 2.通过 `Enhancer` 增强
+#### 2.Enhance through `Enhancer`
 ```java
 @Autowired
 private ApacheHttpClientRequestLogEnhancer enhancer;
 
-// 使用返回的对象
+// Use the returned object
 HttpClient enhancedHttpClient = enhancer.enhance(httpClient);
 ```
 
-#### 3.通过配置，增强所有 `HttpClient` Bean
+#### 3.Enhance all `HttpClient` Beans through Configuration
 ```properties
 request-log.apache-http-client.enhance-all=true
 ```
@@ -43,21 +43,21 @@ request-log.apache-http-client.enhance-all=true
 
 ---
 
-### 使用
+### Usage
 
 
 ```java
 import org.apache.http.client.HttpClient;
         
 /**
- * 原始请求
- * {@link HttpClient#execute} 声明检查异常 `IOException`, `ClientProtocolException`
+ * Original Request
+ *  {@link HttpClient#execute} declares checked exceptions `IOException`, `ClientProtocolException`
  */
 HttpResponse response = httpClient.execute(new HttpGet("url"));
 
 /**
- * 使用 LogContext 包装请求
- * 因为有声明检查异常，使用 `executeWithExp` 代替 `execute`
+ * Wrap the request using LogContext
+ * Since checked exceptions are declared, use `executeWithExp` instead of `execute`
  */
 HttpResponse response = LogContext.log().executeWithExp(() -> {
     return httpClient.execute(new HttpGet("url"));
@@ -66,14 +66,14 @@ HttpResponse response = LogContext.log().executeWithExp(() -> {
 
 ---
 
-### 重试 <a name="retry"></a>
+### Retry <a name="retry"></a>
 
 ```java
 import io.github.requestlog.apachehttpclient.context.retry.ApacheHttpClientRetryClient;
 
 RetryResult retryResult = RetryContext.create(RequestLogObj, @Nullable RequestRetryJobObj)
         .successWhenResponse((requestContext) -> requestContext.getResponseCode() == 200))
-        // 指定使用 HttpClient 作为 Retry 客户端
+        // Specify using HttpClient as the Retry client
         .with(ApacheHttpClientRetryClient.class, httpClient)
         .execute();
 ```

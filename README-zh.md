@@ -2,11 +2,17 @@
 
 [English](README.md)
 
+<br/>
+
 ## 简介
 
 **RequestLog** 是一个基于 spring-boot 的 Http 请求日志记录 与 重试补偿工具。
 <br/>
 **特点**：侵入小、集成简单。
+
+---
+
+<br/>
 
 ## 快速开始 <a name="quick_start"></a>
 
@@ -71,9 +77,11 @@ String result = LogContext.log().execute(() -> {
 
 ---
 
+<br/>
 
 ## 详细文档
 
+- [通用配置](/docs/zh/common_usage.md)
 - [RestTemplate 使用方式](/docs/zh/rest_template_usage.md)
 - [ApacheHttpClient 使用方式](/docs/zh/apache_http_client_usage.md)
 - [OKHttp 使用方式](/docs/zh/ok_http_usage.md)

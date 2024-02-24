@@ -39,13 +39,13 @@ public interface IRequestLogRepository {
      * Generate a {@link RequestRetryJob} from given {@link RequestLog}
      */
     default RequestRetryJob generateNewRetryJob(RequestLog requestLog) {
-        return generateNewRetryJob(requestLog, RetryWaitStrategy.FIXED, 60);
+        return generateNewRetryJob(requestLog, RetryWaitStrategy.FIXED, 60, 3);
     }
 
     /**
      * Generate a {@link RequestRetryJob} from given {@link RequestLog}
      */
-    default RequestRetryJob generateNewRetryJob(RequestLog requestLog, RetryWaitStrategy retryWaitStrategy, int retryInterval) {
+    default RequestRetryJob generateNewRetryJob(RequestLog requestLog, RetryWaitStrategy retryWaitStrategy, int retryInterval, int maxExecuteCount) {
 
         RequestRetryJob retryJob = new RequestRetryJob();
         retryJob.setRequestLog(requestLog);
@@ -54,6 +54,7 @@ public interface IRequestLogRepository {
         retryJob.setLastExecuteTimeMillis(0L);
         retryJob.setExecuteCount(1); // 1 is for RequestLog first execution count.
         retryJob.setNextExecuteTimeMillis(System.currentTimeMillis()); // instant retry.
+        retryJob.setMaxExecuteCount(maxExecuteCount);
 
         return retryJob;
     }

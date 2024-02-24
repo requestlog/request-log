@@ -251,7 +251,7 @@ LogContext.retry()
  * `generateNewRetryJob` 为 default 方法，不需要实现
  */
 IRequestLogRepository.generateNewRetryJob(RequestLog);
-IRequestLogRepository.generateNewRetryJob(RequestLog, RetryWaitStrategy, retryInterval);
+IRequestLogRepository.generateNewRetryJob(RequestLog, RetryWaitStrategy, retryInterval, maxExecuteCount);
 
 /**
  * - 实现 `saveRequestRetryJob` 方法
@@ -301,9 +301,9 @@ RetryResult retryResult = RetryContext.create(RequestLogObj, @Nullable RequestRe
 
 重试 `execute` 之后，会得到一个 `RetryResult`
 
-- `succeed()`：判断当前重试是否成功，可以将 `RequestRetryJob` 进行删除或者归档
+- `succeed()`：判断当前重试是否成功，成功后可以将 `RequestRetryJob` 进行删除或者归档
 - `shouldContinue()`：判断当前重试任务是否应该继续，根据当前执行是否成功 且 是否达到期望的最大执行次数 判断
-- `updateRetryJob()`：修改重试任务在重试失败后，修改重试任务用
+- `updateRetryJob()`：修改重试任务在重试失败后，修改重试任务用，该操作会修改原始对象
 - `generateRetryLog()`：生成一个重试日志
 
 ```java
@@ -322,16 +322,17 @@ if (retryResult.succeed) {
          * - `lastExecuteTimeMillis`：上一次执行时间
          * - `nextExecuteTimeMillis`：下一次执行时间
          * - `executeCount`：总执行次数（包含记录日志时的次数）
+         *
+         * 返回 `RequestRetryJob` 原始对象
          */
-        retryResult.updateRetryJob();
+        RequestRetryJob requestRetryJob = retryResult.updateRetryJob();
             
-        // 如果需要获取 获取构建重试时传入的 `RequestRetryJob` 对象
+        // 还可以这么获取原始 `RequestRetryJob` 对象
         RequestRetryJob requestRetryJob = retryResult.getRetryContext().getRequestRetryJob();
 
     } else {
         // 不应该继续重试任务了，自行选择删除任务还是加大重试次数
     }
-        
     
 }
 

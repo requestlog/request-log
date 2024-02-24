@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 
 public enum HttpMethod {
 
-    // TODO: 2024/1/31 more headers?
     GET, HEAD, POST, PUT, PATCH, DELETE, OPTIONS, TRACE;
 
 

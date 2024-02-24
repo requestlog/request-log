@@ -53,7 +53,6 @@ public class OkHttpRequestContext extends OutboundRequestContext {
 
     @Override
     public String getRequestPath() {
-        // TODO: 2024/2/17 encoded path
         return request.url().encodedPath();
     }
 
