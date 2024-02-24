@@ -61,7 +61,7 @@ public class MyRequestLogRepository implements IRequestLogRepository {
 // 原始请求
 String result = restTemplate.getForObject("url", String.class);
 
-// 包装后请求
+// 使用 LogContext 包装请求
 String result = LogContext.log().execute(() -> {
     return restTemplate.getForObject("url", String.class);
 });
@@ -78,3 +78,4 @@ String result = LogContext.log().execute(() -> {
 - [ApacheHttpClient 使用方式](/docs/zh/apache_http_client_usage.md)
 - [OKHttp 使用方式](/docs/zh/ok_http_usage.md)
 - [Feign 使用方式](/docs/zh/feign_usage.md)
+- [Servlet 使用方式](/docs/zh/servlet_usage.md)

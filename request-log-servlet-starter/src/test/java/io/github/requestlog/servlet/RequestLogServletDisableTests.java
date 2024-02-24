@@ -1,76 +1,74 @@
-package io.github.requestlog.feign;
+package io.github.requestlog.servlet;
 
-import io.github.requestlog.core.context.LogContext;
+
 import io.github.requestlog.core.repository.impl.InMemoryRequestLogRepository;
-import io.github.requestlog.feign.clients.TestFeignClient;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.web.client.RestTemplate;
 
+import static io.github.requestlog.servlet.controller.TestServletLogRestController.GET_ERROR_PATH;
 
 /**
  * Tests for disable by properties.
  */
-public class RequestLogFeignDisableTests {
+public class RequestLogServletDisableTests {
 
 
-    @SpringBootTest(classes = TestApplication.class,
+    @SpringBootTest(
             webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-            properties = {
-                    "debug=true"
-            }
+            classes = TestApplication.class,
+            properties = "debug=true"
     )
     @Slf4j
     public static class NormalTests {
-
+        @LocalServerPort
+        private int port;
         @Autowired
-        private TestFeignClient testFeignClient;
+        private RestTemplate restTemplate;
         @Autowired
         private InMemoryRequestLogRepository repository;
 
         @Test
         public void testNormal() {
             int size = repository.getRequestLogSize();
-            LogContext.log().execute(() -> {
-                try {
-                    testFeignClient.getError();
-                } catch (Exception ignored) {
-                }
-            });
+            try {
+                restTemplate.getForObject(String.format("http://localhost:%s%s", port, GET_ERROR_PATH), String.class);
+            } catch (Exception ignored) {
+            }
             assert repository.getRequestLogSize() == size + 1;
         }
 
     }
 
-    @SpringBootTest(classes = TestApplication.class,
+    @SpringBootTest(
             webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+            classes = TestApplication.class,
             properties = {
                     "debug=true",
-                    "request-log.feign.disable=true"
+                    "request-log.servlet.disable=true"
             }
     )
     @Slf4j
     public static class DisableTests {
-
+        @LocalServerPort
+        private int port;
         @Autowired
-        private TestFeignClient testFeignClient;
+        private RestTemplate restTemplate;
         @Autowired
         private InMemoryRequestLogRepository repository;
 
         @Test
         public void testDisable() {
             int size = repository.getRequestLogSize();
-            LogContext.log().execute(() -> {
-                try {
-                    testFeignClient.getError();
-                } catch (Exception ignored) {
-                }
-            });
+            try {
+                restTemplate.getForObject(String.format("http://localhost:%s%s", port, GET_ERROR_PATH), String.class);
+            } catch (Exception ignored) {
+            }
             assert repository.getRequestLogSize() == size;
         }
-
     }
-
 
 }

@@ -26,7 +26,7 @@ public class RequestLogFeignAdvice {
 
     private final AbstractRequestLogHandler requestLogHandler;
 
-    @Value("${request-log.ok-http.disable:#{null}}")
+    @Value("${request-log.feign.disable:#{null}}")
     private String disable;
 
 

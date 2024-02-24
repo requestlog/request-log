@@ -50,7 +50,7 @@ request-log.rest-template.enhance-all=true
 // 原始请求
 String result = restTemplate.getForObject("url", String.class);
 
-// 包装后请求
+// 使用 LogContext 包装请求
 String result = LogContext.log().execute(() -> {
     return restTemplate.getForObject("url", String.class);
 });

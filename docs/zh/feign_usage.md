@@ -19,7 +19,7 @@
 
 Feign 采用 AOP 方式，引入依赖后自动增强
 
-如果想要临时关闭的话，配置 `request-log.ok-http.disable=true`
+如果想要临时关闭的话，配置 `request-log.feign.disable=true`
 
 <br/>
 

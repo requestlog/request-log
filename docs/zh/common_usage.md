@@ -11,7 +11,7 @@
 // 原始请求
 String result = restTemplate.getForObject("url", String.class);
 
-// 包装后请求
+// 使用 LogContext 包装请求
 String result = LogContext.log().execute(() -> {
     return restTemplate.getForObject("url", String.class);
 });
@@ -30,7 +30,7 @@ import io.github.requestlog.core.model.RequestRetryJob;
  * 创建一个日志上下文
  * 满足条件时，保存 `日志`
  * 
- * 调用 {@link IRequestLogRepository#saveRequestLog}
+ * 保存时 调用 {@link IRequestLogRepository#saveRequestLog}
  * 保存 {@link RequestLog}
  */
 LogContext.log();
@@ -39,7 +39,7 @@ LogContext.log();
  * 创建一个日志上下文
  * 满足条件时，保存 `日志` 与 `重试任务`
  * 
- * 调用 {@link IRequestLogRepository#saveRequestLogAndRetryJob}
+ * 保存时 调用 {@link IRequestLogRepository#saveRequestLogAndRetryJob}
  * 保存 {@link RequestLog} {@link RequestRetryJob}
  */
 LogContext.retry()
@@ -72,6 +72,7 @@ RequestLog
  * - 上一次重试时间
  * - 下一次重试时间
  * - 已执行次数（包含记录日志时 首次执行次数）
+ * - 期望执行次数（包含记录日志时 首次执行次数）
  */
 RequestRetryJob
 
@@ -82,11 +83,11 @@ RequestRetryJob
 RequestRryLog
 ```
 
-
-
 ---
 
 #### 记录日志条件
+
+怎样才算请求失败，哪些异常需要忽略，正确的响应体应该是怎样的
 
 ```java
 LogContext.log()
@@ -97,6 +98,8 @@ LogContext.log()
          * 显示指定 一个或多个 Exception.class
          * 或传入一个 Predicate<Exception>
          * 调用哪个都会覆盖另一个
+         * 
+         * 默认：出现异常就算失败
          */
         .ignoreException(RuntimeException.class, IOException.class, NumberFormatException.class)
         .ignoreException(exception -> exception instanceof ClassCastException)
@@ -104,6 +107,8 @@ LogContext.log()
         /**
          * 根据 http response 相关信息判断
          * 这里可以拿到大多数 http request response 相关信息
+         * 
+         * 默认：http code == 2xx
          */
         .successWhenResponse(requestContext -> {
             return requestContext.getResponseCode() == 200;
@@ -150,6 +155,22 @@ Predicates.registerSuccessResponsePredicate(requestContext -> requestContext.get
 - `LogContext#executeWithExp(RunnableExp<E>)`：执行请求，允许指定一个检查异常
 - `LogContext#executeWithExp(SupplierExp<T,E>)`：执行请求并返回，允许指定一个检查异常
 
+
+---
+
+
+#### 日志自定义参数
+
+自定义参数，比如一些 `bizCode`、`tenantId` 等字段。
+
+```java
+LogContext.log()
+        .addAttribute("bizCode", "userLoginCount")
+        .addAttribute("tenantId", 1000L);
+
+// 记录日志时，会在这里体现，如果未调用过 `addAttribute` 该 map 为 null
+io.github.requestlog.core.model.RequestLog#attributeMap;
+```
 
 ---
 
@@ -204,8 +225,10 @@ import io.github.requestlog.core.enums.RetryWaitStrategy;
 LogContext.retry()
         // 重试任务执行基础间隔（默认 60秒）
         .retryInterval(60)
-        // 重试任务，下次执行时间计算策略（默认固定时间）
-        .retryWaitStrategy(RetryWaitStrategy.FIXED);
+        // 重试任务，下次执行时间计算策略（默认 固定间隔）
+        .retryWaitStrategy(RetryWaitStrategy.FIXED)
+        // 最大执行次数，包含首次记录日志时的执行 (默认 3次)
+        .maxExecuteCount(3);
 ```
 
 重试间隔计算策略 (60s 间隔为例):
@@ -279,8 +302,9 @@ RetryResult retryResult = RetryContext.create(RequestLogObj, @Nullable RequestRe
 重试 `execute` 之后，会得到一个 `RetryResult`
 
 - `succeed()`：判断当前重试是否成功，可以将 `RequestRetryJob` 进行删除或者归档
+- `shouldContinue()`：判断当前重试任务是否应该继续，根据当前执行是否成功 且 是否达到期望的最大执行次数 判断
 - `updateRetryJob()`：修改重试任务在重试失败后，修改重试任务用
-- `generateRetryLog()`：生成一个重试日志。
+- `generateRetryLog()`：生成一个重试日志
 
 ```java
 
@@ -288,18 +312,27 @@ if (retryResult.succeed) {
     // 执行成功，删除 RequestRetryJob 或归档
         
 } else {
-    // 执行失败    
+    // 执行失败
     
-    /**
-     * 修改原始构建对象，会影响如下字段
-     * - `lastExecuteTimeMillis`：上一次执行时间
-     * - `nextExecuteTimeMillis`：下一次执行时间
-     * - `executeCount`：总执行次数（包含记录日志时的次数）
-     */
-    retryResult.updateRetryJob();
+    // 是否应该继续重试
+    if (retryResult.shouldContinue()) {
+
+        /**
+         * 修改原始构建对象，会影响如下字段
+         * - `lastExecuteTimeMillis`：上一次执行时间
+         * - `nextExecuteTimeMillis`：下一次执行时间
+         * - `executeCount`：总执行次数（包含记录日志时的次数）
+         */
+        retryResult.updateRetryJob();
+            
+        // 如果需要获取 获取构建重试时传入的 `RequestRetryJob` 对象
+        RequestRetryJob requestRetryJob = retryResult.getRetryContext().getRequestRetryJob();
+
+    } else {
+        // 不应该继续重试任务了，自行选择删除任务还是加大重试次数
+    }
         
-    // 如果需要获取 获取构建重试时传入的 `RequestRetryJob` 对象
-    RequestRetryJob requestRetryJob = retryResult.getRetryContext().getRequestRetryJob();
+    
 }
 
 // 无论重试结果如何，都可以生成一个重试日志，自行选择如何处理

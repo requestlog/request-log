@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.context.request.RequestContextHolder;
 
 
@@ -27,11 +28,14 @@ public class RequestLogServletAdvice {
 
     private final AbstractRequestLogHandler requestLogHandler;
 
+    @Value("${request-log.servlet.disable:#{null}}")
+    private String disable;
 
     @Around("@annotation(reqLog)")
     public Object aroundHandleException(ProceedingJoinPoint joinPoint, ReqLog reqLog) throws Throwable {
 
-        if (THREAD_LOCAL.get() != null || ServletUtils.isCurrentRequestRetry()) {
+        if (THREAD_LOCAL.get() != null || ServletUtils.isCurrentRequestRetry()
+                || "true".equals(disable)) {
             return joinPoint.proceed();
         }
 
