@@ -19,6 +19,10 @@
 
 Feign 采用 AOP 方式，引入依赖后自动增强
 
+如果想要临时关闭的话，配置 `request-log.ok-http.disable=true`
+
+<br/>
+
 注意事项：FeignClient 需要使用服务发现方式，如果指定 url 方式，则失效
 
 
@@ -28,13 +32,12 @@ Feign 采用 AOP 方式，引入依赖后自动增强
 
 
 ```java
-// 测试用的 feign，可以在 test 中找到
-import io.github.requestlog.feign.clients.TestFeignClient;
+import io.github.requestlog.feign.clients.TestFeignClient; // 测试用的 feign，可以在 test 中找到
 
 // 原始请求
 ResponseModel responseModel = testFeignClient.get();
 
-// 包装后请求
+// 使用 LogContext 包装请求
 ResponseModel responseModel = LogContext.log().execute(() -> {
     return testFeignClient.get();
 });
