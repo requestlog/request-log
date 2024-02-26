@@ -25,6 +25,14 @@
         <connection>git@github.com:requestlog/request-log.git</connection>
     </scm>
 
+    <developers>
+        <developer>
+            <id>wolfie</id>
+            <name>wolfie</name>
+            <email>woffiesonfire@gmail.com</email>
+        </developer>
+    </developers>
+
     <properties>
         <revision>1.0-SNAPSHOT</revision>
         <maven.compiler.source>8</maven.compiler.source>
